@@ -4,10 +4,10 @@ from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from flask.cli import FlaskGroup
 from server.utils import send_file
-from server import app, db
+from __init__ import app, db, User
 
 cli = FlaskGroup(app)
-app.run(debug=True, host='0.0.0.0', port=5000)
+
 
 @app.route('/<path:path>')
 def static_file(path):
@@ -15,16 +15,14 @@ def static_file(path):
 
 @app.route('/')
 def root():
-    print("test")
     return send_file('index.html')
-
 
 
 @app.post('/db/add')
 def db_add():
     try:
         data = request.form
-        user = User(**data, voted=False)
+        user = User(**data)
         db.session.add(user)
         db.session.commit()
         return f'User {user} added to the database'
@@ -46,3 +44,6 @@ def login():
     return { 'message': 'Login failed!' }
 
     
+if __name__ == "__main__":
+    app.run(debug=True, host='0.0.0.0', port=5000)
+    cli()

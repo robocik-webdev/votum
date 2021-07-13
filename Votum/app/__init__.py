@@ -3,12 +3,12 @@ import sqlalchemy
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
-import os
+
 
 
 app = Flask(__name__)
 
-app.config.from_object("server.config.Config")
+app.config.from_object("config.Config")
 
 db = SQLAlchemy(app)
 

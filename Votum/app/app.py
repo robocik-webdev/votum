@@ -13,6 +13,7 @@ cli = FlaskGroup(app)
 def static_file(path):
     return send_file(path)
 
+
 @app.route('/')
 def root():
     return send_file('index.html')
@@ -28,7 +29,7 @@ def db_add():
         return f'User {user} added to the database'
     except Exception as e:
         return f'Something went wrong while adding a user to the database\n{e}'
-        
+
 
 @app.post('/login')
 def login():
@@ -38,12 +39,12 @@ def login():
     if user.password == password:
         return {
             'message':
-                f'Witaj z powrotem <b>{user.username}</b>!'\
+                f'Witaj z powrotem <b>{user.username}</b>!'
                 f'<br>Głosowano: <b>{user.voted}</b>'
         }
-    return { 'message': 'Login failed!' }
+    return {'message': 'Login failed!'}
 
-    
+
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)
     cli()

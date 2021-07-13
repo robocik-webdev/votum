@@ -5,7 +5,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.sql import text
 
 
-
 app = Flask(__name__)
 
 app.config.from_object("config.Config")
@@ -22,10 +21,14 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<User {self.username}>'
+
+
 '''
     Creates database by running
     flask createdb
 '''
+
+
 @app.cli.command("createdb")
 def db_create():
     engine = db.engine

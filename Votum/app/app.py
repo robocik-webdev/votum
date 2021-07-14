@@ -1,10 +1,7 @@
 #!/usr/bin/env python3
-import os
 import json
-from flask import Flask, request
-from flask_sqlalchemy import SQLAlchemy
+from flask import request
 from flask.cli import FlaskGroup
-from json import dumps
 from server.utils import send_file
 from server import app, db, User
 
@@ -35,37 +32,34 @@ def db_add():
 
 @app.post('/api/login')
 def login():
+    """POST request for authentication"""
     username = request.json['username']
     password = request.json['password']
     user = User.query.filter_by(username=username).first()
-    if user is not None:
-        if user.password == password:
-            return {
-                'message':
-                    f'Witaj z powrotem <b>{username}</b>!'
-            }
+    if user is not None and user.password == password:
+        return {'message': f'Witaj z powrotem <b>{username}</b>!'}
     return {'message': 'Login failed!'}, 401
-
-
-"""
-    POST request for authentication
-"""
 
 
 @app.route('/api/questions', methods=['GET'])
 def get_remaining_questions():
+    """GET request for remaining user questions"""
     username = request.json['username']
     password = request.json['password']
     user = User.query.filter_by(username=username).first()
     if user is not None:
         if user.password == password:
             conn = db.engine.connect()
-            query = f'SELECT q.id, q.context, q.possible_answers FROM questions q WHERE q.id NOT IN (SELECT uhq.questions_id FROM users_has_questions uhq WHERE users_id = {user.id})'
+            query = f'SELECT q.id, q.context, q.possible_answers \
+                FROM questions q WHERE q.id NOT IN \
+                (SELECT uhq.questions_id FROM users_has_questions uhq \
+                WHERE users_id = {user.id})'
             resultQuestions = conn.execute(query)
             result = []
             for row in resultQuestions:
                 answers = []
-                query = f'select id, context from answers a where a.questions_id = {row[0]}'
+                query = f'SELECT id, context FROM answers a \
+                    WHERE a.questions_id = {row[0]}'
                 resultAnswers = conn.execute(query)
                 for ans_row in resultAnswers:
                     answer = {
@@ -83,11 +77,6 @@ def get_remaining_questions():
             return json.dumps(result)
 
     return {'message': 'nope'}, 401
-
-
-"""
-    GET request for remaining user questions
-"""
 
 
 if __name__ == "__main__":

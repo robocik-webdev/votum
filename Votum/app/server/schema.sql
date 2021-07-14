@@ -9,13 +9,14 @@ CREATE TABLE users(
 
 CREATE TABLE questions(
     id SERIAL PRIMARY KEY ,
-    context VARCHAR(200) NOT NULL
+    context VARCHAR(200) NOT NULL,
+    possible_answers INTEGER NOT NULL
 );
 
 CREATE TABLE answers(
     id SERIAL PRIMARY KEY ,
     context VARCHAR(200) NOT NULL,
-    id_question INTEGER REFERENCES questions(id)
+    questions_id INTEGER REFERENCES questions(id)
 );
 
 CREATE TABLE users_has_questions(
@@ -24,7 +25,7 @@ CREATE TABLE users_has_questions(
     questions_id INTEGER REFERENCES questions(id)
 );
 
-CREATE TABLE questions_has_answers(
+CREATE TABLE answered_questions(
     id SERIAL PRIMARY KEY,
     questions_id INTEGER REFERENCES questions(id),
     answers_id INTEGER REFERENCES answers(id)

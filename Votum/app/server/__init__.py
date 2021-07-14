@@ -7,7 +7,7 @@ from sqlalchemy.sql import text
 
 app = Flask(__name__)
 
-app.config.from_object("config.Config")
+app.config.from_object("server.config.Config")
 
 db = SQLAlchemy(app)
 
@@ -23,16 +23,31 @@ class User(db.Model):
         return f'<User {self.username}>'
 
 
+def execute_sql_file(filename):
+    engine = db.engine
+    with engine.connect() as con:
+        sql_file = open(f'server/{filename}.sql', 'r')
+        escaped_sql = sqlalchemy.text(sql_file.read())
+        con.execute(escaped_sql)
+
+
+@app.cli.command("seeddb")
+def seed_db():
+    execute_sql_file("seed")
+
+
 '''
-    Creates database by running
-    flask createdb
+    Seeds database with testing questions by running
+    flask seeddb
 '''
 
 
 @app.cli.command("createdb")
-def db_create():
-    engine = db.engine
-    with engine.connect() as con:
-        sql_file = open('server/schema.sql', 'r')
-        escaped_sql = sqlalchemy.text(sql_file.read())
-        con.execute(escaped_sql)
+def create_db():
+    execute_sql_file("schema")
+
+
+'''
+    Creates database by running
+    flask createdb
+'''

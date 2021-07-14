@@ -5,7 +5,7 @@ from random import choice, randint
 
 def random_user():
     def repeat(func, min, max): return ''.join(func()
-                                               for _ in range(randint(min, max)))
+        for _ in range(randint(min, max)))
 
     def vowel(): return choice('aeiou')
     def vowels(min, max): return repeat(vowel, min, max)

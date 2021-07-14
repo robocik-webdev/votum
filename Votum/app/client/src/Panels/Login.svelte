@@ -1,40 +1,38 @@
 <script>
-  import Logo from '../Components/Logo.svelte';
   import { fetchPOST } from '../utils.js';
+  import { authenticated } from '../store.js';
+  import Logo from '../Components/Logo.svelte';
 
-  let username;
-  let password;
-
+  let token;
   let message;
 
-  async function login() {
-    const json = await fetchPOST('/login', {
-      username: username,
-      password: password
-    })
-    message = json.message
+  async function login(token) {
+    console.log(token);
+    const json = await fetchPOST('/login', { token: token });
+    message = json.message;
   }
 
   function handleEnter(e) {
     if (e.key === 'Enter') login();
   }
+
+  const url = new URLSearchParams(window.location.search);
+  login(url.get('t'));
 </script>
 
 <div class="login">
-  <div class="logo">
-    <Logo></Logo>
-  </div>
-  <h1 class="title">Spis ludności</h1>
+  <Logo />
   <div class="container" on:keydown={handleEnter}>
     <label>
-      Nazwa użytkownika
-      <input type="text" bind:value={username}>
+      <input type="password" bind:value={token} placeholder="Token" />
     </label>
-    <label>
-      Hasło
-      <input type="password" bind:value={password}>
-    </label>
-    <input type="submit" value="Zaloguj" on:click={login}>
+    <input
+      type="submit"
+      value="Zaloguj"
+      on:click={() => {
+        login(token);
+      }}
+    />
     {#if message}
       <p>{@html message}</p>
     {/if}
@@ -50,11 +48,7 @@
     justify-content: center;
     align-items: center;
   }
-  .logo {
-    position: fixed;
-    top: 10vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  .container {
+    margin-top: 20px;
   }
 </style>

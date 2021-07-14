@@ -1,33 +1,35 @@
 <div>
-  <img src="icons/logo.svg" alt="Robocik Logo">
-  <h1>ROBOCIK<span>w sercu technologii</span></h1>
+  <img src="icons/logo.svg" alt="Robocik Logo" />
+  <h1>
+    Votum
+    <br /><span>Robocikum</span>
+  </h1>
 </div>
 
 <style>
   div {
     position: relative;
     display: flex;
-    align-items: center;
-    height: 20vw;
-    max-height: 100px;
+    justify-content: center;
   }
   img {
+    height: min(40vw, 200px);
     display: block;
-    height: 100%;
+    opacity: 0.2;
   }
   h1 {
-    position: relative;
-    top: -6%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     display: flex;
     flex-direction: column;
-    margin-left: 15px;
-    font-family: 'Jura', sans-serif;
-    font-size: min(9vw, 50px);
+    align-items: center;
     font-weight: bold;
+    font-size: min(15vw, 75px);
   }
-  h1 > span {
-    position: relative;
-    left: 2%;
-    font-size: 0.42em;
+  span {
+    margin-top: -10px;
+    font-size: min(5vw, 25px);
   }
 </style>

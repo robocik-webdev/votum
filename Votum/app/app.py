@@ -33,11 +33,10 @@ def db_add():
 @app.post('/api/login')
 def login():
     """POST request for authentication"""
-    username = request.json['username']
-    password = request.json['password']
-    user = User.query.filter_by(username=username).first()
-    if user is not None and user.password == password:
-        return {'message': f'Witaj z powrotem <b>{username}</b>!'}
+    token = request.json['token']
+    user = User.query.filter_by(password=token).first()
+    if user is not None and user.password == token:
+        return {'message': f'Witaj z powrotem <b>{user.username}</b>!'}
     return {'message': 'Login failed!'}, 401
 
 

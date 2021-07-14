@@ -8,7 +8,8 @@
 
   async function login(token) {
     console.log(token);
-    const json = await fetchPOST('/login', { token: token });
+    const json = await fetchPOST('/api/login', { token: token });
+    console.log(json);
     message = json.message;
   }
 
@@ -17,7 +18,10 @@
   }
 
   const url = new URLSearchParams(window.location.search);
-  login(url.get('t'));
+  const urlToken = url.get('t');
+  if (urlToken) {
+    login(url.get('t'));
+  }
 </script>
 
 <div class="login">

@@ -33,7 +33,7 @@ def db_add():
         return f'Something went wrong while adding a user to the database\n{e}'
 
 
-@app.post('/login')
+@app.post('/api/login')
 def login():
     username = request.json['username']
     password = request.json['password']
@@ -52,7 +52,7 @@ def login():
 """
 
 
-@app.route('/questions', methods=['GET'])
+@app.route('/api/questions', methods=['GET'])
 def get_remaining_questions():
     username = request.json['username']
     password = request.json['password']
@@ -88,12 +88,6 @@ def get_remaining_questions():
 """
     GET request for remaining user questions
 """
-
-
-@app.errorhandler(404)
-def unauthorized():
-    response = jsonify({'message': 'Nothing to see here 🐧'})
-    return response, 404
 
 
 if __name__ == "__main__":

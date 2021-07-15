@@ -133,6 +133,7 @@ def answer_questions():
             return {'message': 'error'}, 418
     return {'message': 'nope'}, 401
 
+
 @app.post('/api/results')
 def get_results():
     token = request.json['token']
@@ -152,12 +153,12 @@ def get_results():
             results_dict[results_row['question']].append({
                 "answer": results_row['answer'],
                 "count": results_row['count']
-                })
+            })
         results = []
         for key, value in results_dict.items():
             results.append({
-                "question" : key,
-                "answers" : value
+                "question": key,
+                "answers": value
             })
         return json.dumps(results), 200
     return {'message': 'nope'}, 401

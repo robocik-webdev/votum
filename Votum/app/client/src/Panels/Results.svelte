@@ -1,18 +1,45 @@
 <script>
+  import { onDestroy, onMount } from 'svelte';
   import { fetchPOST } from '../utils.js';
   import { token } from '../store.js';
   import Logo from '../Components/Logo.svelte';
   import Loader from '../Components/Loader.svelte';
 
+  const DDOSTime = 5; // seconds
+  let DDOSTimeout = 0;
+
+  let showRefresh = true;
+
   async function getResults() {
     let results = await fetchPOST('/api/results', { token: $token });
+    if (results.length && interval) {
+      clearInterval(interval);
+      showRefresh = false;
+    }
     return results;
   }
   let awaitResults = getResults();
 
   function refresh() {
+    console.log('refresh');
     awaitResults = getResults();
+    DDOSTimeout = DDOSTime;
+    for (let i = 0; i < DDOSTime; i++) {
+      setTimeout(() => {
+        DDOSTimeout--;
+      }, i * 1000);
+    }
   }
+
+  const time = 30; // seconds
+  let interval;
+  onMount(() => {
+    interval = setInterval(refresh, time * 1000);
+  });
+  onDestroy(() => {
+    clearInterval(interval);
+    interval == false;
+  });
 </script>
 
 <div class="wrapper">
@@ -40,9 +67,16 @@
     <p class="error">Coś poszło nie tak...<br />{error}</p>
   {/await}
 
-  <div class="refresh">
-    <input type="submit" value="Odśwież" on:click={refresh} />
-  </div>
+  {#if showRefresh}
+    <div class="refresh">
+      <input
+        type="submit"
+        value={DDOSTimeout == 0 ? 'Odśwież' : `DDOS Shield (${DDOSTimeout})`}
+        on:click={refresh}
+        disabled={DDOSTimeout > 0}
+      />
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -73,6 +107,10 @@
   }
   input[type='submit'] {
     margin-top: 35px;
+  }
+  input[disabled] {
+    background-color: var(--grey);
+    border-color: var(--grey);
   }
 
   @media (min-width: 505px) {

@@ -1,15 +1,19 @@
 <script>
   import { fetchPOST } from '../utils.js';
-  import { authenticated } from '../store.js';
+  import { authenticated, username, token } from '../store.js';
   import Logo from '../Components/Logo.svelte';
 
-  let token;
   let message;
 
-  async function login(token) {
-    console.log(token);
-    const json = await fetchPOST('/api/login', { token: token });
-    console.log(json);
+  async function login() {
+    const json = await fetchPOST('/api/login', { token: $token });
+    if (json.username) {
+      console.log(json.username);
+      $username = json.username;
+      $authenticated = true;
+    } else {
+      $authenticated = false;
+    }
     message = json.message;
   }
 
@@ -20,23 +24,16 @@
   const url = new URLSearchParams(window.location.search);
   const urlToken = url.get('t');
   if (urlToken) {
-    login(url.get('t'));
+    $token = urlToken;
+    login();
   }
 </script>
 
 <div class="login">
   <Logo />
   <div class="container" on:keydown={handleEnter}>
-    <label>
-      <input type="password" bind:value={token} placeholder="Token" />
-    </label>
-    <input
-      type="submit"
-      value="Zaloguj"
-      on:click={() => {
-        login(token);
-      }}
-    />
+    <input type="password" bind:value={$token} placeholder="Token" />
+    <input type="submit" value="Zaloguj" on:click={login} />
     {#if message}
       <p>{@html message}</p>
     {/if}
@@ -54,5 +51,14 @@
   }
   .container {
     margin-top: 20px;
+  }
+  p {
+    margin-top: 40px;
+  }
+
+  input {
+    display: block;
+    margin-top: 20px;
+    min-width: 200px;
   }
 </style>

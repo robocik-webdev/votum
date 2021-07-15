@@ -9,7 +9,7 @@ cli = FlaskGroup(app)
 
 
 def get_user_id(token):
-    user = User.query.filter_by(password=token).first()
+    user = User.query.filter_by(token=token).first()
     if user is not None:
         return user.id
     return None
@@ -41,8 +41,8 @@ def db_add():
 def login():
     """POST request for authentication"""
     token = request.json['token']
-    user = User.query.filter_by(password=token).first()
-    if user is not None and user.password == token:
+    user = User.query.filter_by(token=token).first()
+    if user is not None and user.token == token:
         return {
             'username': user.username,
             'message': f'Witaj z powrotem <b>{user.username}</b>!'

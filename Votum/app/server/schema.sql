@@ -4,13 +4,15 @@ CREATE SCHEMA public;
 CREATE TABLE users(
     id SERIAL PRIMARY KEY ,
     username VARCHAR(200) NOT NULL UNIQUE,
-    password VARCHAR(200) NOT NULL
+    token VARCHAR(200) NOT NULL
 );
 
 CREATE TABLE questions(
     id SERIAL PRIMARY KEY ,
     context VARCHAR(200) NOT NULL,
-    possible_answers INTEGER NOT NULL
+    possible_answers INTEGER NOT NULL,
+    open_time TIMESTAMP NOT NULL,
+    close_time TIMESTAMP NOT NULL
 );
 
 CREATE TABLE answers(

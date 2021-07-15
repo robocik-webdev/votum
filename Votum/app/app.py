@@ -32,9 +32,9 @@ def db_add():
         user = User(**data)
         db.session.add(user)
         db.session.commit()
-        return f'User {user} added to the database'
+        return f"User {user} added to the database"
     except Exception as e:
-        return f'Something went wrong while adding a user to the database\n{e}'
+        return f"Something went wrong while adding a user to the database\n{e}"
 
 
 @app.post('/api/login')
@@ -45,7 +45,7 @@ def login():
     if user is not None and user.password == token:
         return {
             'username': user.username,
-            'message': f'Witaj z powrotem <b>{user.username}</b>!'
+            'message': f"Witaj z powrotem <b>{user.username}</b>!"
         }
     return {'message': 'Login failed!'}, 401
 
@@ -57,16 +57,16 @@ def get_remaining_questions():
     user_id = get_user_id(token)
     if user_id is not None:
         conn = db.engine.connect()
-        query = f'SELECT q.id, q.context, q.possible_answers \
-                FROM questions q WHERE q.id NOT IN \
-                (SELECT uhq.questions_id FROM users_has_questions uhq \
-                WHERE users_id = {user_id})'
+        query = f"SELECT q.id, q.context, q.possible_answers \
+                  FROM questions q WHERE q.id NOT IN \
+                  (SELECT uhq.questions_id FROM users_has_questions uhq \
+                  WHERE users_id = {user_id})"
         resultQuestions = conn.execute(query)
         result = []
         for row in resultQuestions:
             answers = []
-            query = f'SELECT id, context FROM answers a \
-                    WHERE a.questions_id = {row[0]}'
+            query = f"SELECT id, context FROM answers a \
+                      WHERE a.questions_id = {row[0]}"
             resultAnswers = conn.execute(query)
             for ans_row in resultAnswers:
                 answer = {
@@ -95,23 +95,23 @@ def answer_questions():
     if user_id is not None:
         conn = db.engine.connect()
         query = f"SELECT q.id \
-                FROM questions q \
-                WHERE q.id NOT IN (SELECT uhq.questions_id \
-                FROM users_has_questions uhq WHERE users_id = {user_id})"
+                  FROM questions q \
+                  WHERE q.id NOT IN (SELECT uhq.questions_id \
+                  FROM users_has_questions uhq WHERE users_id = {user_id})"
         questions_left = [r for r, in conn.execute(query)]
         if len(questions_left) == 0:
-            return {"message": "No questions left for user to answer"}, 418
+            return {'message': 'No questions left for user to answer'}, 418
         for answered_question in answered_questions:
             valid = True
             if answered_question['id'] not in questions_left:
                 validity_check = False
                 continue
-            query = f"select possible_answers from questions \
-                    where id={answered_question['id']}"
+            query = f"SELECT possible_answers FROM questions \
+                      WHERE id = {answered_question['id']}"
             max_answers = conn.execute(query).first()['possible_answers']
             if max_answers >= len(answered_question['answers']):
-                query = f"select id from answers \
-                         where questions_id = {answered_question['id']}"
+                query = f"SELECT id FROM answers \
+                          WHERE questions_id = {answered_question['id']}"
                 possible_answers = [r for r, in conn.execute(query)]
                 for answer in answered_question['answers']:
                     if answer['id'] not in possible_answers:
@@ -120,12 +120,13 @@ def answer_questions():
                 if valid:
                     for answer in answered_question['answers']:
                         query = f"INSERT INTO answered_questions \
-                             (id, questions_id, answers_id) VALUES\
-                             (DEFAULT, {answered_question['id']}, {answer['id']})"
+                                  (id, questions_id, answers_id) VALUES \
+                                  (DEFAULT, {answered_question['id']}, \
+                                  {answer['id']})"
                         conn.execute(query)
                     query = f"INSERT INTO users_has_questions \
-                            (id, users_id, questions_id) VALUES \
-                            (DEFAULT, {user_id}, {answered_question['id']})"
+                             (id, users_id, questions_id) VALUES \
+                             (DEFAULT, {user_id}, {answered_question['id']})"
                     conn.execute(query)
         if validity_check:
             return {'message': 'OK'}, 200
@@ -139,31 +140,31 @@ def get_results():
     token = request.json['token']
     if get_user_id(token) is not None:
         conn = db.engine.connect()
-        query = "select q.context as question, a.context as answer, count(aq.id) as count \
-                from answers a \
-                        inner join questions q on q.id = a.questions_id \
-                        left join answered_questions aq on a.id = aq.answers_id \
-                group by q.context, a.context, q.id, a.id \
-                order by q.id, a.id"
+        query = "SELECT q.context AS question, a.context AS answer, count(aq.id) AS count \
+                 FROM answers a \
+                   INNER JOIN questions q ON q.id = a.questions_id \
+                   LEFT JOIN answered_questions aq ON a.id = aq.answers_id \
+                 GROUP BY q.context, a.context, q.id, a.id \
+                 ORDER BY q.id, a.id"
         results_query = conn.execute(query)
         results_dict = {}
         for results_row in results_query:
             if results_row['question'] not in results_dict:
                 results_dict[results_row['question']] = []
             results_dict[results_row['question']].append({
-                "answer": results_row['answer'],
-                "count": results_row['count']
+                'answer': results_row['answer'],
+                'count': results_row['count']
             })
         results = []
         for key, value in results_dict.items():
             results.append({
-                "question": key,
-                "answers": value
+                'question': key,
+                'answers': value
             })
         return json.dumps(results), 200
     return {'message': 'nope'}, 401
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
     cli()

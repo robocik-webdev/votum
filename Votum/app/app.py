@@ -8,6 +8,11 @@ from server import app, db, User
 cli = FlaskGroup(app)
 
 
+def get_user_id(token):
+    user = User.query.filter_by(password=token).first()
+    return user.id
+
+
 @app.route('/<path:path>')
 def static_file(path):
     return send_file(path)
@@ -75,6 +80,53 @@ def get_remaining_questions():
                 result.append(question)
             return json.dumps(result)
 
+    return {'message': 'nope'}, 401
+
+
+@app.post('/api/answer')
+def answer_questions():
+    token = request.json['token']
+    answered_questions = request.json['questions']
+    user = get_user_id(token)
+    validity_check = True
+    if user is not None:
+        conn = db.engine.connect()
+        query = f"SELECT q.id \
+        FROM questions q \
+        WHERE q.id NOT IN (SELECT uhq.questions_id FROM users_has_questions uhq WHERE users_id = {user})"
+        questions_left = [r for r, in conn.execute(query)]
+        if len(questions_left) == 0:
+            return {"message": "No questions left for user to answer"}, 418
+        for answered_question in answered_questions:
+            valid = True
+            if answered_question['id'] not in questions_left:
+                validity_check = False
+                continue
+            query = f"select possible_answers from questions \
+                    where id={answered_question['id']}"
+            max_answers = conn.execute(query).first()['possible_answers']
+            if max_answers >= len(answered_question['answers']):
+                query = f"select id from answers \
+                         where questions_id = {answered_question['id']}"
+                possible_answers = [r for r, in conn.execute(query)]
+                for answer in answered_question['answers']:
+                    if answer['id'] not in possible_answers:
+                        valid = False
+                        validity_check = False
+                if valid:
+                    for answer in answered_question['answers']:
+                        query = f"INSERT INTO answered_questions \
+                             (id, questions_id, answers_id) VALUES\
+                             (DEFAULT, {answered_question['id']}, {answer['id']})"
+                        conn.execute(query)
+                    query = f"INSERT INTO users_has_questions \
+                            (id, users_id, questions_id) VALUES \
+                            (DEFAULT, {user}, {answered_question['id']})"
+                    conn.execute(query)
+        if validity_check:
+            return {'message': 'OK'}, 200
+        else:
+            return {'message': 'error'}, 418
     return {'message': 'nope'}, 401
 
 

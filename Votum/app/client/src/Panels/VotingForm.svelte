@@ -1,7 +1,7 @@
 <script>
   import { slide } from 'svelte/transition';
   import { fetchPOST } from '../utils.js';
-  import { username, token } from '../store.js';
+  import { username, token, finished } from '../store.js';
   import Logo from '../Components/Logo.svelte';
   import Loader from '../Components/Loader.svelte';
 
@@ -16,6 +16,8 @@
       });
       questions_answers.push({ id: question.id, answers: [] });
     });
+    console.log(questions);
+    $finished = questions.length == 0;
     return questions;
   }
   let awaitQuestions = getQuestions();
@@ -27,13 +29,24 @@
     };
     questions_answers.forEach(question => {
       let answers = { id: question.id, answers: [] };
-      question.answers.forEach(answer_id => {
-        answers.answers.push({ id: answer_id });
-      });
+      let type = typeof question.answers;
+      if (type == 'object') {
+        question.answers.forEach(answer_id => {
+          answers.answers.push({ id: answer_id });
+        });
+      } else if (type == 'number') {
+        answers.answers.push({ id: question.answers });
+      }
       data.questions.push(answers);
     });
+    console.log(data);
     let res = await fetchPOST('/api/answer', data);
     console.log(res);
+    refresh();
+  }
+
+  async function refresh() {
+    awaitQuestions = getQuestions();
   }
 </script>
 

@@ -16,7 +16,7 @@ services:
         source: ./votum/app
         target: /app/
   postgres-db:
-    image: postgres:latest
+    image: postgres:alpine
     volumes:
       - postgres-dev:/var/lib/postgresql/data/
     env_file:

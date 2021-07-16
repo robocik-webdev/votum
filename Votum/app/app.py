@@ -25,18 +25,6 @@ def root():
     return send_file('index.html')
 
 
-@app.post('/db/add')
-def db_add():
-    try:
-        data = request.form
-        user = User(**data)
-        db.session.add(user)
-        db.session.commit()
-        return f"User {user} added to the database"
-    except Exception as e:
-        return f"Something went wrong while adding a user to the database\n{e}"
-
-
 @app.post('/api/login')
 def login():
     """POST request for authentication"""

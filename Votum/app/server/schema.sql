@@ -1,10 +1,12 @@
 DROP SCHEMA public CASCADE;
 CREATE SCHEMA public;
 
+SET timezone TO 'Europe/Warsaw';
+
 CREATE TABLE users(
     id SERIAL PRIMARY KEY ,
     username VARCHAR(200) NOT NULL UNIQUE,
-    token VARCHAR(200) NOT NULL
+    token VARCHAR(200) NOT NULL UNIQUE
 );
 
 CREATE TABLE questions(

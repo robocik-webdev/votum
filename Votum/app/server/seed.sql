@@ -1,8 +1,8 @@
 INSERT INTO questions (id, context, possible_answers, open_time, close_time) VALUES 
-(DEFAULT, 'Czy lubisz pizze?', 1, '2021-07-16 01:00:00.000000', '2021-07-16 03:00:00.000000'),
-(DEFAULT, 'Coś zrobił z tą maszynką?!', 2, '2021-07-16 01:00:00.000000', '2021-07-16 03:00:00.000000'),
-(DEFAULT, 'Czy warto robić?', 1, '2021-07-16 01:00:00.000000', '2021-07-16 03:00:00.000000'),
-(DEFAULT, 'Jaki jest sens istnienia?', 3, '2021-07-16 01:00:00.000000', '2021-07-16 03:00:00.000000');
+(DEFAULT, 'Czy lubisz pizze?', 1, '2021-07-16 15:00:00.000000', '2021-07-16 15:15:00.000000'),
+(DEFAULT, 'Coś zrobił z tą maszynką?!', 2, '2021-07-16 15:00:00.000000', '2021-07-16 15:15:00.000000'),
+(DEFAULT, 'Czy warto robić?', 1, '2021-07-16 15:00:00.000000', '2021-07-16 15:15:00.000000'),
+(DEFAULT, 'Jaki jest sens istnienia?', 3, '2021-07-16 15:00:00.000000', '2021-07-16 15:15:00.000000');
 INSERT INTO answers (id, context, questions_id)
 VALUES  (1, 'Tak', 1),
         (2, 'Nie', 1),

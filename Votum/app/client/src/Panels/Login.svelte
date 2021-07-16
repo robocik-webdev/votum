@@ -8,7 +8,6 @@
   async function login() {
     const json = await fetchPOST('/api/login', { token: $token });
     if (json.username) {
-      console.log(json.username);
       $username = json.username;
       $authenticated = true;
     } else {

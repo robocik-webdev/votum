@@ -1,7 +1,7 @@
 <script>
   import { onDestroy, onMount } from 'svelte';
   import { fetchPOST } from '../utils.js';
-  import { token } from '../store.js';
+  import { token, finished } from '../store.js';
   import Logo from '../Components/Logo.svelte';
   import Loader from '../Components/Loader.svelte';
 
@@ -11,6 +11,8 @@
   let showRefresh = true;
 
   async function getResults() {
+    let questions = await fetchPOST('/api/questions', { token: $token });
+    $finished = questions.length == 0;
     let results = await fetchPOST('/api/results', { token: $token });
     if (results.length && interval) {
       clearInterval(interval);
@@ -46,7 +48,7 @@
   <Logo />
 
   {#await awaitResults}
-    <p class="questions"><Loader /> Pobieram wyniki</p>
+    <p class="questions info"><Loader /> Pobieram wyniki</p>
   {:then results}
     {#if results.length}
       <form class="questions">
@@ -60,11 +62,11 @@
         {/each}
       </form>
     {:else}
-      <p>Wyniki nie są jeszcze dostępne.</p>
-      <p>Kiedy będą dostępne strona odświeży się automatycznie.</p>
+      <p class="info">Wyniki nie są jeszcze dostępne.</p>
+      <p class="info">Kiedy będą dostępne strona odświeży się automatycznie.</p>
     {/if}
   {:catch error}
-    <p class="error">Coś poszło nie tak...<br />{error}</p>
+    <p class="error info">Coś poszło nie tak...<br />{error}</p>
   {/await}
 
   {#if showRefresh}
@@ -117,6 +119,10 @@
     .wrapper {
       margin: 0 auto;
       padding: 80px 20px;
+    }
+
+    .info {
+      text-align: center;
     }
 
     .questions {

@@ -14,7 +14,7 @@ def random_user():
     def symbol(): return choice([vowel(), consonant(), number()])
     username = consonant()+vowels(1, 2)+consonant()+vowels(1, 2)+consonant()
     token = repeat(symbol, 8, 12)
-    return {'username': username.capitalize(), 'password': token}
+    return {'username': username.capitalize(), 'token': token}
 
 
 def add_user_to_database(user):
@@ -31,7 +31,7 @@ args = parser.parse_args()
 if args.username and args.token:
     user = {
         'username': args.username,
-        'password': args.token
+        'token': args.token
     }
 else:
     user = random_user()

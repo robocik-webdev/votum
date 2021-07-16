@@ -60,7 +60,8 @@ def get_remaining_questions():
         query = f"SELECT q.id, q.context, q.possible_answers \
                   FROM questions q WHERE q.id NOT IN \
                   (SELECT uhq.questions_id FROM users_has_questions uhq \
-                  WHERE users_id = {user_id})"
+                  WHERE users_id = {user_id}) \
+                  AND now() BETWEEN SYMMETRIC q.open_time AND q.close_time;"
         resultQuestions = conn.execute(query)
         result = []
         for row in resultQuestions:
@@ -97,7 +98,8 @@ def answer_questions():
         query = f"SELECT q.id \
                   FROM questions q \
                   WHERE q.id NOT IN (SELECT uhq.questions_id \
-                  FROM users_has_questions uhq WHERE users_id = {user_id})"
+                  FROM users_has_questions uhq WHERE users_id = {user_id}) \
+                  AND now() BETWEEN SYMMETRIC q.open_time AND q.close_time;"
         questions_left = [r for r, in conn.execute(query)]
         if len(questions_left) == 0:
             return {'message': 'No questions left for user to answer'}, 418
@@ -144,6 +146,7 @@ def get_results():
                  FROM answers a \
                    INNER JOIN questions q ON q.id = a.questions_id \
                    LEFT JOIN answered_questions aq ON a.id = aq.answers_id \
+                 WHERE now() > q.close_time \
                  GROUP BY q.context, a.context, q.id, a.id \
                  ORDER BY q.id, a.id"
         results_query = conn.execute(query)

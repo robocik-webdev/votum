@@ -20,8 +20,11 @@
   }
   let awaitResults = getResults();
 
-  function refresh() {
+  async function refresh() {
     console.log('refresh');
+    let questions = await fetchPOST('/api/questions', { token: $token });
+    console.log(questions);
+    $finished = questions.length == 0;
     awaitResults = getResults();
     DDOSTimeout = DDOSTime;
     for (let i = 0; i < DDOSTime; i++) {
@@ -46,7 +49,9 @@
   <Logo />
 
   {#await awaitResults}
-    <p class="questions"><Loader /> Pobieram wyniki</p>
+    <div class="info">
+      <p class="questions"><Loader /> Pobieram wyniki</p>
+    </div>
   {:then results}
     {#if results.length}
       <form class="questions">
@@ -60,11 +65,15 @@
         {/each}
       </form>
     {:else}
-      <p>Wyniki nie są jeszcze dostępne.</p>
-      <p>Kiedy będą dostępne strona odświeży się automatycznie.</p>
+      <div class="info">
+        <p>Formularz lub wyniki nie są jeszcze dostępne.</p>
+        <p>Strona odświeży się automatycznie.</p>
+      </div>
     {/if}
   {:catch error}
-    <p class="error">Coś poszło nie tak...<br />{error}</p>
+    <div class="info">
+      <p class="error">Coś poszło nie tak...<br />{error}</p>
+    </div>
   {/await}
 
   {#if showRefresh}
@@ -87,6 +96,16 @@
     margin: 0 auto;
     padding: 60px 20px;
     min-height: 100vh;
+  }
+
+  .info {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    margin-top: 40px;
+  }
+  .info p {
+    margin: 0;
   }
 
   .questions {

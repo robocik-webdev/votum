@@ -49,13 +49,15 @@ def get_remaining_questions():
                   FROM questions q WHERE q.id NOT IN \
                   (SELECT uhq.questions_id FROM users_has_questions uhq \
                   WHERE users_id = {user_id}) \
-                  AND now() BETWEEN SYMMETRIC q.open_time AND q.close_time;"
+                  AND now() BETWEEN SYMMETRIC q.open_time AND q.close_time\
+                  ORDER BY q.id;"
         resultQuestions = conn.execute(query)
         result = []
         for row in resultQuestions:
             answers = []
             query = f"SELECT id, context FROM answers a \
-                      WHERE a.questions_id = {row[0]}"
+                      WHERE a.questions_id = {row[0]} \
+                      ORDER BY id;"
             resultAnswers = conn.execute(query)
             for ans_row in resultAnswers:
                 answer = {
@@ -72,7 +74,7 @@ def get_remaining_questions():
             result.append(question)
         return json.dumps(result)
 
-    return {'message': 'nope'}, 401
+    return {'message': 'nope'}, 400
 
 
 @app.post('/api/answer')
@@ -99,6 +101,9 @@ def answer_questions():
             query = f"SELECT possible_answers FROM questions \
                       WHERE id = {answered_question['id']}"
             max_answers = conn.execute(query).first()['possible_answers']
+            if len(answered_question['answers']) == 0:
+                validity_check = False
+                continue
             if max_answers >= len(answered_question['answers']):
                 query = f"SELECT id FROM answers \
                           WHERE questions_id = {answered_question['id']}"
@@ -157,5 +162,5 @@ def get_results():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=False, host='0.0.0.0', port=5000)
     cli()

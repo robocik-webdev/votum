@@ -4,7 +4,6 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from random import choice, randint
 
-
 app = Flask(__name__)
 app.config.from_object('server.config.Config')
 db = SQLAlchemy(app)
@@ -39,7 +38,7 @@ def seed_db():
 def create_db():
     """Creates database by running `flask createdb`"""
     execute_sql_file('schema')
-
+    print()
 
 def random_user():
     def repeat(func, min, max): return ''.join(
@@ -62,3 +61,4 @@ def add_random_user(count = 1):
         user = User(**random_user())
         db.session.add(user)
         db.session.commit()
+        print("test")

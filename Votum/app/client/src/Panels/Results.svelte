@@ -1,7 +1,7 @@
 <script>
   import { onDestroy, onMount } from 'svelte';
   import { fetchPOST } from '../utils.js';
-  import { token, finished } from '../store.js';
+  import { token } from '../store.js';
   import Logo from '../Components/Logo.svelte';
   import Loader from '../Components/Loader.svelte';
 
@@ -136,10 +136,6 @@
     .wrapper {
       margin: 0 auto;
       padding: 80px 20px;
-    }
-
-    .info {
-      text-align: center;
     }
 
     .questions {

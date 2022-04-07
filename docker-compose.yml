@@ -1,20 +1,19 @@
-version: '3.3'
+version: '3.8'
 
 services:
-  votum:
-    build: ./votum/
+  census:
+    build: ./Votum/
     tty: true
-    command: python3 app.py
+    command: nodemon --legacy-watch server.js
     ports:
-      - 5000:5000
+      - 3000:3000
     env_file:
       - ./.env.dev
     depends_on:
       - postgres-db
     volumes:
-      - type: bind
-        source: ./votum/app
-        target: /app/
+      - ./Votum:/app
+      - /app/node_modules
   postgres-db:
     image: postgres:12.7-buster
     volumes:

@@ -1,10 +1,11 @@
-FROM python:3.9-slim-buster
+FROM node:16
 
 WORKDIR /app
 
-COPY requirements.txt requirements.txt
+COPY . /app
 
 RUN apt-get update && apt-get install -y build-essential netcat libpq-dev
-RUN pip install --upgrade pip
-RUN pip3 install -r requirements.txt
+RUN npm install -g nodemon
+RUN npm install
 
+EXPOSE 3000

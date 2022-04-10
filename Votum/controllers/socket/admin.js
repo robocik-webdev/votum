@@ -73,9 +73,8 @@ const adminAddAnswer = async (socket, message) => {
     })
     .then(valid => {
       if (valid) {
-        console.log(message);
         pool.query(
-          `INSERT INTO answers (context, questions_id) VALUES ($1 , $2)`,
+          `INSERT INTO answers (context, questions_id) VALUES ($1, $2);`,
           [message.answer, message.questionId],
           (err, res) => {
             if (err) {
@@ -155,7 +154,7 @@ const adminAddQuestion = async (socket, message) => {
     .then(valid => {
       if (valid) {
         pool.query(
-          `INSERT INTO questions (context, possible_answers, open_time, close_time) VALUES ($1,$2,$3,$4);`,
+          `INSERT INTO questions (context, possible_answers, open_time, close_time) VALUES ($1, $2, $3, $4);`,
           [
             message.question,
             message.possibleAnswers,
@@ -276,7 +275,7 @@ const adminAddUser = async (socket, message) => {
             message.surname,
             message.email,
             makeToken(8),
-            message.righttovote,
+            message.rightToVote,
             message.admin
           ],
           (err, res) => {

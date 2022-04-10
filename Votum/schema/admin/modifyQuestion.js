@@ -1,6 +1,10 @@
 const Yup = require('yup');
 
 const newQuestion = Yup.object({
+  id: Yup.number('This value needs to be a number')
+    .required('id is required')
+    .positive()
+    .integer(),
   question: Yup.string()
     .required('Question required')
     .min(1, 'Question too short'),

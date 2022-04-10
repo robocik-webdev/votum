@@ -1,28 +1,24 @@
-
 {
-    "name": "Votum",
-    "version": "0.0.69",
-    "description": "Backend do spisu ludności i autoryzacji Robocika",
-    "author": "LOLOLOLOL",
-    "main": "server.js",
-    "scripts": {
-        "dev": "nodemon server.js",
-        "start": "node server.js"
-    },
-    "dependencies": {
-        "body-parser": "^1.19.0",
-        "cors": "^2.8.5",
-        "pg": "^8.7.3",
-        "dotenv": "^16.0.0",
-        "express": "^4.17.1",
-        "express-session": "^1.17.2",
-        "ioredis": "^5.0.3",
-        "jsonwebtoken": "^8.5.1",
-        "mongodb": "^4.1.1",
-        "postgres": "^3.0.2",
-        "helmet": "^5.0.2",
-        "socket.io": "^4.4.1",
-        "swagger-ui-express": "^4.1.6",
-        "yup":"^0.32.11"
-    }
+  "name": "votum",
+  "version": "0.0.420",
+  "description": "Backend do spisu ludności i autoryzacji Robocika",
+  "author": "LOLOLOLOL",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "pg": "^8.7.3",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.2",
+    "jsonwebtoken": "^8.5.1",
+    "helmet": "^5.0.2",
+    "socket.io": "^4.4.1",
+    "swagger-ui-express": "^4.1.6",
+    "yup": "^0.32.11"
+  }
 }

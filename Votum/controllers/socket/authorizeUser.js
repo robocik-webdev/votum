@@ -1,5 +1,5 @@
-const { jwtVerify } = require("../jwt/jwtAuth");
-require("dotenv").config();
+const { jwtVerify } = require('../jwt/jwtAuth');
+require('dotenv').config();
 
 const authorizeUser = (socket, next) => {
   const token = socket.handshake.auth.token;
@@ -9,8 +9,8 @@ const authorizeUser = (socket, next) => {
       next();
     })
     .catch(err => {
-      console.log("Bad request!", err);
-      next(new Error("Not authorized"));
+      console.log('Bad request!', err);
+      next(new Error('Not authorized'));
     });
 };
 

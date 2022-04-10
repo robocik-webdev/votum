@@ -1,7 +1,7 @@
-const { jwtSign, jwtVerify, getJwt } = require("../jwt/jwtAuth");
-const loginSchema = require("../../schema/login")
-const pool = require("../../db");
-require("dotenv").config();
+const { jwtSign } = require('../jwt/jwtAuth');
+const loginSchema = require('../../schema/login');
+const pool = require('../../db');
+require('dotenv').config();
 
 const login = async (token, res) => {
   const potentialLogin = await pool.query(
@@ -9,35 +9,38 @@ const login = async (token, res) => {
   );
 
   if (potentialLogin.rowCount > 0) {
-      jwtSign(
-        {
-          token: token,
-          id: potentialLogin.rows[0].id,
-        },
-        process.env.JWT_SECRET,
-        { expiresIn: "1d" }
-      )
-        .then(token => {
-          res.json({ loggedIn: true, admin: potentialLogin.rows[0].admin, token });
-        })
-        .catch(err => {
-          console.log(err);
-          res.json({ loggedIn: false, status: "uhhhh" });
+    jwtSign(
+      {
+        token: token,
+        id: potentialLogin.rows[0].id
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    )
+      .then(token => {
+        res.json({
+          loggedIn: true,
+          admin: potentialLogin.rows[0].admin,
+          token
         });
+      })
+      .catch(err => {
+        console.log(err);
+        res.json({ loggedIn: false, status: 'uhhhh' });
+      });
   } else {
-    console.log("not good");
-    res.json({ loggedIn: false, status: "Wrong token!" });
+    console.log('not good');
+    res.json({ loggedIn: false, status: 'Wrong token!' });
   }
-}
+};
 
 const loginPost = async (req, res) => {
-    login([req.body.token],res);
-}
-   
+  login([req.body.token], res);
+};
 
 const loginGet = async (req, res) => {
-  console.log(req.query.token)
-  login([req.query.token],res);
+  console.log(req.query.token);
+  login([req.query.token], res);
 };
 
 const validateLogin = (req, res, next) => {
@@ -47,14 +50,17 @@ const validateLogin = (req, res, next) => {
     .catch(() => {
       res.status(422).send();
     })
-    .then( valid =>{
-      if(valid){
+    .then(valid => {
+      if (valid) {
         next();
-      }
-      else{
+      } else {
         res.status(422).send();
       }
-    })
-}
+    });
+};
 
-module.exports = {attemptLogin: loginPost, handleLogin: loginGet, validateLogin};
+module.exports = {
+  attemptLogin: loginPost,
+  handleLogin: loginGet,
+  validateLogin
+};

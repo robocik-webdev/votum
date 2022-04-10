@@ -1,5 +1,5 @@
-require("dotenv").config();
-const jwt = require("jsonwebtoken");
+require('dotenv').config();
+const jwt = require('jsonwebtoken');
 
 const jwtSign = (payload, secret, options) =>
   new Promise((resolve, reject) => {
@@ -17,6 +17,4 @@ const jwtVerify = (token, secret) =>
     });
   });
 
-const getJwt = req => req.headers["auth"].split(" ")[1];
-
-module.exports = { jwtSign, jwtVerify, getJwt };
+module.exports = { jwtSign, jwtVerify };

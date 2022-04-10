@@ -21,6 +21,7 @@ const {
   adminAddQuestion,
   adminModifyQuestnion,
   adminRemoveQuestion,
+  adminSetQuestionShowAnswers,
   adminAddUser,
   adminModifyUser,
   adminRemoveUser,
@@ -87,6 +88,9 @@ io.on('connect', async socket => {
   );
   socket.on('adminModifyQuestion', message =>
     authorizeAdmin(socket, adminModifyQuestnion, message)
+  );
+  socket.on('adminSetQuestionShowAnswers', message =>
+    authorizeAdmin(socket, adminSetQuestionShowAnswers, message)
   );
   socket.on('adminRemoveQuestion', message =>
     authorizeAdmin(socket, adminRemoveQuestion, message)

@@ -9,6 +9,7 @@ const {
   modifyUser,
   modifyQuestion,
   userCSV,
+  questionShowAnswers,
   userPrivilage,
   idValidation
 } = require('../../schema/adminSchema');
@@ -57,12 +58,15 @@ const adminQuestions = async socket => {
     );
     element.answers = availableAnswers.rows;
   }
-  socket.emit('adminQuestions', { questions: availablePolls.rows });
+  socket.emit('adminQuestions', {
+    status: 200,
+    data: { questions: availablePolls.rows }
+  });
 };
 
 const adminUsers = async socket => {
   const users = await pool.query(`SELECT * FROM users`);
-  socket.emit('adminUsers', { users: users.rows });
+  socket.emit('adminUsers', { status: 200, data: { users: users.rows } });
 };
 
 const adminAddAnswer = async (socket, message) => {
@@ -74,11 +78,14 @@ const adminAddAnswer = async (socket, message) => {
     .then(valid => {
       if (valid) {
         pool.query(
-          `INSERT INTO answers (context, questions_id) VALUES ($1, $2);`,
+          `INSERT INTO answers (id, title, questions_id) VALUES (DEFAULT, $1, $2);`,
           [message.answer, message.questionId],
           (err, res) => {
             if (err) {
-              socket.emit('adminAddAnswer', { status: 406, error: err });
+              socket.emit('adminAddAnswer', {
+                status: 406,
+                data: { error: err }
+              });
             } else {
               socket.emit('adminAddAnswer', { status: 200 });
               adminQuestions(socket);
@@ -101,11 +108,14 @@ const adminModifyAnswer = async (socket, message) => {
     .then(valid => {
       if (valid) {
         pool.query(
-          'UPDATE answers SET context=$1 WHERE id=$2',
+          'UPDATE answers SET title=$1 WHERE id=$2',
           [message.answer, message.id],
           (err, res) => {
             if (err) {
-              socket.emit('adminModifyAnswer', { status: 406, error: err });
+              socket.emit('adminModifyAnswer', {
+                status: 406,
+                data: { error: err }
+              });
             } else {
               socket.emit('adminModifyAnswer', { status: 200 });
               adminQuestions(socket);
@@ -132,7 +142,10 @@ const adminRemoveAnswer = async (socket, message) => {
           [message.id],
           (err, res) => {
             if (err) {
-              socket.emit('adminRemoveAnswer', { status: 406, error: err });
+              socket.emit('adminRemoveAnswer', {
+                status: 406,
+                data: { error: err }
+              });
             } else {
               socket.emit('adminRemoveAnswer', { status: 200 });
               adminQuestions(socket);
@@ -154,16 +167,20 @@ const adminAddQuestion = async (socket, message) => {
     .then(valid => {
       if (valid) {
         pool.query(
-          `INSERT INTO questions (context, possible_answers, open_time, close_time) VALUES ($1, $2, $3, $4);`,
+          `INSERT INTO questions (title, possible_answers, show_answers, open_time, close_time) VALUES ($1, $2, $3, $4, $5);`,
           [
             message.question,
             message.possibleAnswers,
+            message.showAnswers,
             message.openTime,
             message.closeTime
           ],
           (err, res) => {
             if (err) {
-              socket.emit('adminAddQuestion', { status: 406, error: err });
+              socket.emit('adminAddQuestion', {
+                status: 406,
+                data: { error: err }
+              });
             } else {
               socket.emit('adminAddQuestion', { status: 200 });
               adminQuestions(socket);
@@ -186,17 +203,21 @@ const adminModifyQuestnion = async (socket, message) => {
     .then(valid => {
       if (valid) {
         pool.query(
-          'UPDATE questions SET context=$1, possible_answers=$2, open_time=$3, close_time=$4 WHERE id=$5',
+          'UPDATE questions SET title=$1, possible_answers=$2, show_answers=$3, open_time=$4, close_time=$5 WHERE id=$6',
           [
             message.question,
             message.possibleAnswers,
+            message.showAnswers,
             message.openTime,
             message.closeTime,
             message.id
           ],
           (err, res) => {
             if (err) {
-              socket.emit('adminModifyQuestion', { status: 406, error: err });
+              socket.emit('adminModifyQuestion', {
+                status: 406,
+                data: { error: err }
+              });
             } else {
               socket.emit('adminModifyQuestion', { status: 200 });
               adminQuestions(socket);
@@ -218,25 +239,56 @@ const adminRemoveQuestion = async (socket, message) => {
     .then(valid => {
       if (valid) {
         pool.query(
-          `DELETE FROM answers WHERE questions_id=$1`,
+          `DELETE FROM users_has_questions WHERE questions_id=$1`,
           [message.id],
           (err, res) => {
             if (err) {
-              socket.emit('adminRemoveQuestion', { status: 406, error: err });
+              socket.emit('adminRemoveQuestion', {
+                status: 406,
+                data: { error: err }
+              });
             } else {
               pool.query(
-                `DELETE FROM questions WHERE id=$1`,
+                `DELETE FROM answered_questions WHERE questions_id=$1`,
                 [message.id],
                 (err, res) => {
                   if (err) {
                     socket.emit('adminRemoveQuestion', {
                       status: 406,
-                      error: err
+                      data: { error: err }
                     });
                   } else {
-                    socket.emit('adminRemoveQuestion', { status: 200 });
-                    adminQuestions(socket);
-                    adminRefresh(socket);
+                    pool.query(
+                      `DELETE FROM answers WHERE questions_id=$1`,
+                      [message.id],
+                      (err, res) => {
+                        if (err) {
+                          socket.emit('adminRemoveQuestion', {
+                            status: 406,
+                            data: { error: err }
+                          });
+                        } else {
+                          pool.query(
+                            `DELETE FROM questions WHERE id=$1`,
+                            [message.id],
+                            (err, res) => {
+                              if (err) {
+                                socket.emit('adminRemoveQuestion', {
+                                  status: 406,
+                                  error: err
+                                });
+                              } else {
+                                socket.emit('adminRemoveQuestion', {
+                                  status: 200
+                                });
+                                adminQuestions(socket);
+                                adminRefresh(socket);
+                              }
+                            }
+                          );
+                        }
+                      }
+                    );
                   }
                 }
               );
@@ -245,6 +297,36 @@ const adminRemoveQuestion = async (socket, message) => {
         );
       } else {
         socket.emit('adminRemoveQuestion', { status: 400 });
+      }
+    });
+};
+
+const adminSetQuestionShowAnswers = async (socket, message) => {
+  questionShowAnswers
+    .validate(message)
+    .catch(err => {
+      console.log(err);
+    })
+    .then(valid => {
+      if (valid) {
+        pool.query(
+          'UPDATE questions SET show_answers=$1 where id=$2',
+          [message.showAnswers, message.id],
+          (err, res) => {
+            if (err) {
+              socket.emit('adminSetQuestionShowAnswers', {
+                status: 406,
+                data: { error: err }
+              });
+            } else {
+              socket.emit('adminSetQuestionShowAnswers', { status: 200 });
+              adminQuestions(socket);
+              adminRefresh(socket);
+            }
+          }
+        );
+      } else {
+        socket.emit('adminSetQuestionShowAnswers', { status: 400 });
       }
     });
 };
@@ -269,7 +351,7 @@ const adminAddUser = async (socket, message) => {
     .then(valid => {
       if (valid) {
         pool.query(
-          `INSERT INTO users (name, surname, email, token, righttovote, admin) VALUES ($1,$2,$3,$4,$5,$6);`,
+          `INSERT INTO users (name, surname, email, token, right_to_vote, admin) VALUES ($1,$2,$3,$4,$5,$6);`,
           [
             message.name,
             message.surname,
@@ -280,7 +362,10 @@ const adminAddUser = async (socket, message) => {
           ],
           (err, res) => {
             if (err) {
-              socket.emit('adminAddUser', { status: 406, error: err });
+              socket.emit('adminAddUser', {
+                status: 406,
+                data: { error: err }
+              });
             } else {
               socket.emit('adminAddUser', { status: 200 });
               adminUsers(socket);
@@ -301,7 +386,7 @@ const adminModifyUser = async (socket, message) => {
     .then(valid => {
       if (valid) {
         pool.query(
-          'UPDATE users SET name=$1, surname=$2, email=$3, righttovote=$4, admin=$5 WHERE id=$6',
+          'UPDATE users SET name=$1, surname=$2, email=$3, right_to_vote=$4, admin=$5 WHERE id=$6',
           [
             message.name,
             message.surname,
@@ -312,7 +397,10 @@ const adminModifyUser = async (socket, message) => {
           ],
           (err, res) => {
             if (err) {
-              socket.emit('adminModifyUser', { status: 406, error: err });
+              socket.emit('adminModifyUser', {
+                status: 406,
+                data: { error: err }
+              });
             } else {
               socket.emit('adminModifyUser', { status: 200 });
               adminUsers(socket);
@@ -337,7 +425,10 @@ const adminRemoveUser = async (socket, message) => {
           [message.id],
           (err, res) => {
             if (err) {
-              socket.emit('adminRemoveUser', { status: 406, error: err });
+              socket.emit('adminRemoveUser', {
+                status: 406,
+                data: { error: err }
+              });
             } else {
               socket.emit('adminRemoveUser', { status: 200 });
               adminUsers(socket);
@@ -359,11 +450,14 @@ const adminSetUserPrivilage = async (socket, message) => {
     .then(valid => {
       if (valid) {
         pool.query(
-          'UPDATE users SET righttovote=$1 where id=$2',
+          'UPDATE users SET right_to_vote=$1 where id=$2',
           [message.rightToVote, message.id],
           (err, res) => {
             if (err) {
-              socket.emit('adminSetUserPrivilage', { status: 406, error: err });
+              socket.emit('adminSetUserPrivilage', {
+                status: 406,
+                data: { error: err }
+              });
             } else {
               socket.emit('adminSetUserPrivilage', { status: 200 });
               adminUsers(socket);
@@ -389,6 +483,7 @@ module.exports = {
   adminAddQuestion,
   adminModifyQuestnion,
   adminRemoveQuestion,
+  adminSetQuestionShowAnswers,
   adminAddUser,
   adminModifyUser,
   adminRemoveUser,

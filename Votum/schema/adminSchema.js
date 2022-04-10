@@ -7,6 +7,7 @@ const modifyQuestion = require('./admin/modifyQuestion');
 const userCSV = require('./admin/userCSV');
 const idValidation = require('./idValidation');
 const userPrivilage = require('./admin/userPrivilage');
+const questionShowAnswers = require('./admin/questionShowAnswers');
 
 module.exports = {
   newAnswer,
@@ -17,5 +18,6 @@ module.exports = {
   modifyQuestion,
   userCSV,
   userPrivilage,
+  questionShowAnswers,
   idValidation
 };

@@ -20,31 +20,37 @@ const openQuestion = async (socket, message) => {
                 if (res.rows[0].close_time > Date.now()) {
                   console.log('question open');
                   const answers = await pool.query(
-                    `SELECT id, context FROM answers WHERE questions_id=$1`,
+                    `SELECT id, title FROM answers WHERE questions_id=$1`,
                     [message.id]
                   );
                   socket.emit('openQuestion', {
                     status: 300,
-                    question: res.rows[0],
-                    answers: answers.rows
+                    data: {
+                      question: res.rows[0],
+                      answers: answers.rows
+                    }
                   });
-                } else {
+                } else if (res.rows[0].show_answers == true) {
                   console.log('question closed');
                   const answers = await pool.query(
-                    `SELECT a.context AS answer, count(aq.id) AS count
+                    `SELECT a.title AS answer, count(aq.id) AS count
                     FROM answers a
                       INNER JOIN questions q ON q.id = a.questions_id
                       LEFT JOIN answered_questions aq ON a.id = aq.answers_id
                     WHERE now() > q.close_time AND q.id = $1
-                    GROUP BY q.context, a.context, q.id, a.id
+                    GROUP BY q.title, a.title, q.id, a.id
                     ORDER BY q.id, a.id;`,
                     [message.id]
                   );
                   socket.emit('openQuestion', {
                     status: 200,
-                    question: res.rows[0],
-                    answers: answers.rows
+                    data: {
+                      question: res.rows[0],
+                      answers: answers.rows
+                    }
                   });
+                } else {
+                  socket.emit('openQuestion', { status: 403 });
                 }
               } else {
                 socket.emit('openQuestion', { status: 403 });

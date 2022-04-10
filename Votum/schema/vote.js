@@ -1,7 +1,7 @@
 const Yup = require('yup');
 
 const voteValidation = Yup.object({
-  questionID: Yup.number('This value needs to be a number')
+  id: Yup.number('This value needs to be a number')
     .required('id is required')
     .positive()
     .integer(),

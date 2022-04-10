@@ -8,6 +8,9 @@ const newQuestion = Yup.object({
     .required('Maximum possible answers required')
     .positive()
     .integer(),
+  showAnswers: Yup.boolean().required(
+    'You need to specify whether or not to show answers of this poll'
+  ),
   openTime: Yup.date().required('Open time required'),
   closeTime: Yup.date().required('Close time is required')
 });

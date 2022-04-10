@@ -9,21 +9,22 @@ CREATE TABLE users(
     surname VARCHAR(200) NOT NULL,
     email VARCHAR(200) NOT NULL UNIQUE,
     token VARCHAR(200) NOT NULL UNIQUE,
-    rightToVote BOOLEAN NOT NULL DEFAULT 1,
-    admin BOOLEAN NOT NULL DEFAULT 0
+    right_to_vote BOOLEAN NOT NULL DEFAULT TRUE,
+    admin BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE questions(
     id SERIAL PRIMARY KEY ,
-    context VARCHAR(200) NOT NULL,
+    title VARCHAR(200) NOT NULL,
     possible_answers INTEGER NOT NULL,
+    show_answers BOOLEAN NOT NULL DEFAULT FALSE,
     open_time TIMESTAMP NOT NULL,
     close_time TIMESTAMP NOT NULL
 );
 
 CREATE TABLE answers(
     id SERIAL PRIMARY KEY ,
-    context VARCHAR(200) NOT NULL,
+    title VARCHAR(200) NOT NULL,
     questions_id INTEGER REFERENCES questions(id)
 );
 

@@ -4,36 +4,42 @@ const questions = require('./socket/questions');
 const openQuestion = require('./socket/openQuestion');
 const vote = require('./socket/vote');
 const {
+  adminRefresh,
   authorizeAdmin,
   adminQuestions,
   adminUsers,
   adminAddAnswer,
+  adminModifyAnswer,
   adminRemoveAnswer,
   adminAddQuestion,
+  adminModifyQuestnion,
   adminRemoveQuestion,
   adminAddUser,
   adminModifyUser,
   adminRemoveUser,
-  adminModifyQuestnion,
+  adminSetUserPrivilage,
   adminImportUsers
 } = require('./socket/admin');
 
 module.exports = {
-  authorizeAdmin,
   initializeUser,
   authorizeUser,
   questions,
   openQuestion,
   vote,
+  adminRefresh,
+  authorizeAdmin,
   adminQuestions,
   adminUsers,
   adminAddAnswer,
+  adminModifyAnswer,
   adminRemoveAnswer,
   adminAddQuestion,
+  adminModifyQuestnion,
   adminRemoveQuestion,
   adminAddUser,
   adminModifyUser,
   adminRemoveUser,
-  adminModifyQuestnion,
+  adminSetUserPrivilage,
   adminImportUsers
 };

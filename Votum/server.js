@@ -6,23 +6,26 @@ const helmet = require('helmet');
 const cors = require('cors');
 const authRouter = require('./routers/authRouter');
 const {
-  authorizeAdmin,
   initializeUser,
   authorizeUser,
   questions,
+  openQuestion,
   vote,
+  adminRefresh,
+  authorizeAdmin,
   adminQuestions,
   adminUsers,
   adminAddAnswer,
+  adminModifyAnswer,
   adminRemoveAnswer,
   adminAddQuestion,
+  adminModifyQuestnion,
   adminRemoveQuestion,
   adminAddUser,
   adminModifyUser,
   adminRemoveUser,
-  adminModifyQuestnion,
-  adminImportUsers,
-  openQuestion
+  adminSetUserPrivilage,
+  adminImportUsers
 } = require('./controllers/socketController');
 const pool = require('./db');
 
@@ -58,6 +61,8 @@ io.on('connect', async socket => {
   socket.on('vote', message => vote(socket, message));
 
   // Admin section
+  socket.on('adminRefresh', () => authorizeAdmin(socket, adminRefresh));
+
   socket.on('adminQuestions', () => authorizeAdmin(socket, adminQuestions));
 
   socket.on('adminUsers', () => authorizeAdmin(socket, adminUsers));
@@ -71,6 +76,18 @@ io.on('connect', async socket => {
   socket.on('adminAddUser', message =>
     authorizeAdmin(socket, adminAddUser, message)
   );
+  socket.on('adminModifyUser', message =>
+    authorizeAdmin(socket, adminModifyUser, message)
+  );
+  socket.on('adminSetUserPrivilage', message =>
+    authorizeAdmin(socket, adminSetUserPrivilage, message)
+  );
+  socket.on('adminModifyAnswer', message =>
+    authorizeAdmin(socket, adminModifyAnswer, message)
+  );
+  socket.on('adminModifyQuestion', message =>
+    authorizeAdmin(socket, adminModifyQuestnion, message)
+  );
   socket.on('adminRemoveQuestion', message =>
     authorizeAdmin(socket, adminRemoveQuestion, message)
   );
@@ -80,7 +97,6 @@ io.on('connect', async socket => {
   socket.on('adminRemoveUser', message =>
     authorizeAdmin(socket, adminRemoveUser, message)
   );
-  socket.on('read_polls', () => getPolls());
 });
 
 server.listen(process.env.PORT, () => {

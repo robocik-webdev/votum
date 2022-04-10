@@ -1,6 +1,6 @@
 const Yup = require('yup');
 
-const newQuestion = Yup.object({
+const modifyQuestion = Yup.object({
   id: Yup.number('This value needs to be a number')
     .required('id is required')
     .positive()
@@ -15,4 +15,4 @@ const newQuestion = Yup.object({
   openTime: Yup.date().required('Open time required'),
   closeTime: Yup.date().required('Close time is required')
 });
-module.exports = newQuestion;
+module.exports = modifyQuestion;

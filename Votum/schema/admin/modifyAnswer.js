@@ -1,6 +1,6 @@
 const Yup = require('yup');
 
-const newAnswer = Yup.object({
+const modifyAnswer = Yup.object({
   id: Yup.number('This value needs to be a number')
     .required('id is required')
     .positive()
@@ -9,4 +9,4 @@ const newAnswer = Yup.object({
     .required('Answer text required')
     .min(1, 'Answer text too short')
 });
-module.exports = newAnswer;
+module.exports = modifyAnswer;

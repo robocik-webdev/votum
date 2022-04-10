@@ -1,7 +1,7 @@
 const Yup = require('yup');
 
-const newUser = Yup.object({
+const userCSV = Yup.object({
   CSV: Yup.string().required('CSV required'),
   deleteUsers: Yup.boolean()
 });
-module.exports = newUser;
+module.exports = userCSV;

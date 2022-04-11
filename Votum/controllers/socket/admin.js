@@ -79,7 +79,7 @@ const adminAddAnswer = async (socket, message) => {
       if (valid) {
         pool.query(
           `INSERT INTO answers (id, title, questions_id) VALUES (DEFAULT, $1, $2);`,
-          [message.answer, message.questionId],
+          [message.title, message.questionId],
           (err, res) => {
             if (err) {
               socket.emit('adminAddAnswer', {
@@ -109,7 +109,7 @@ const adminModifyAnswer = async (socket, message) => {
       if (valid) {
         pool.query(
           'UPDATE answers SET title=$1 WHERE id=$2',
-          [message.answer, message.id],
+          [message.title, message.id],
           (err, res) => {
             if (err) {
               socket.emit('adminModifyAnswer', {
@@ -169,7 +169,7 @@ const adminAddQuestion = async (socket, message) => {
         pool.query(
           `INSERT INTO questions (title, possible_answers, show_answers, open_time, close_time) VALUES ($1, $2, $3, $4, $5);`,
           [
-            message.question,
+            message.title,
             message.possibleAnswers,
             message.showAnswers,
             message.openTime,
@@ -205,7 +205,7 @@ const adminModifyQuestnion = async (socket, message) => {
         pool.query(
           'UPDATE questions SET title=$1, possible_answers=$2, show_answers=$3, open_time=$4, close_time=$5 WHERE id=$6',
           [
-            message.question,
+            message.title,
             message.possibleAnswers,
             message.showAnswers,
             message.openTime,

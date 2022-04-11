@@ -27,7 +27,7 @@ const vote = async (socket, message) => {
             }
             if (
               message.answers.every(element => indexes.includes(element)) &&
-              message.answers.length <= question.rows[0].possible_answers
+              message.answers.length <= question.rows[0].possibleAnswers
             ) {
               message.answers.forEach(element => {
                 pool.query(

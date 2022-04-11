@@ -5,7 +5,7 @@ const modifyQuestion = Yup.object({
     .required('id is required')
     .positive()
     .integer(),
-  question: Yup.string()
+  title: Yup.string()
     .required('Question required')
     .min(1, 'Question too short'),
   possibleAnswers: Yup.number()

@@ -1,7 +1,7 @@
 const Yup = require('yup');
 
 const newAnswer = Yup.object({
-  answer: Yup.string()
+  title: Yup.string()
     .required('Answer text required')
     .min(1, 'Answer text too short'),
   questionId: Yup.number()

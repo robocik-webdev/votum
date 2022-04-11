@@ -17,8 +17,7 @@ const openQuestion = async (socket, message) => {
               socket.emit('openQuestion', { status: 403 });
             } else {
               if (res.rows.length > 0) {
-                if (res.rows[0].close_time > Date.now()) {
-                  console.log('question open');
+                if (res.rows[0].closeTime > Date.now()) {
                   const answers = await pool.query(
                     `SELECT id, title FROM answers WHERE questions_id=$1`,
                     [message.id]
@@ -30,10 +29,9 @@ const openQuestion = async (socket, message) => {
                       answers: answers.rows
                     }
                   });
-                } else if (res.rows[0].show_answers == true) {
-                  console.log('question closed');
+                } else if (res.rows[0].showAnswers == true) {
                   const answers = await pool.query(
-                    `SELECT a.title AS answer, count(aq.id) AS count
+                    `SELECT a.title AS title, count(aq.id) AS count
                     FROM answers a
                       INNER JOIN questions q ON q.id = a.questions_id
                       LEFT JOIN answered_questions aq ON a.id = aq.answers_id

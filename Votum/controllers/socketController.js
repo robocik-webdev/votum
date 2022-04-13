@@ -19,6 +19,8 @@ const {
   adminModifyUser,
   adminRemoveUser,
   adminSetUserPrivilage,
+  adminRegenUserToken,
+  adminRegenAllUserTokens,
   adminImportUsers
 } = require('./socket/admin');
 
@@ -43,5 +45,7 @@ module.exports = {
   adminModifyUser,
   adminRemoveUser,
   adminSetUserPrivilage,
+  adminRegenUserToken,
+  adminRegenAllUserTokens,
   adminImportUsers
 };

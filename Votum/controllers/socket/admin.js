@@ -1,6 +1,10 @@
 const { jwtVerify } = require('../jwt/jwtAuth');
 const pool = require('../../db');
 const availableQuestions = require('../../utils/availableQuestions');
+const makeToken = require('../../utils/makeToken');
+const regenUserToken = require('../../utils/regenUserToken');
+const papa = require('papaparse');
+
 const {
   newAnswer,
   newUser,
@@ -331,17 +335,6 @@ const adminSetQuestionShowAnswers = async (socket, message) => {
     });
 };
 
-function makeToken(length) {
-  var result = '';
-  var characters =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  var charactersLength = characters.length;
-  for (var i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
-
 const adminAddUser = async (socket, message) => {
   newUser
     .validate(message)
@@ -420,21 +413,17 @@ const adminRemoveUser = async (socket, message) => {
     })
     .then(valid => {
       if (valid) {
-        pool.query(
-          `DELETE FROM users WHERE id=$1`,
-          [message.id],
-          (err, res) => {
-            if (err) {
-              socket.emit('adminRemoveUser', {
-                status: 406,
-                data: { error: err }
-              });
-            } else {
-              socket.emit('adminRemoveUser', { status: 200 });
-              adminUsers(socket);
-            }
+        pool.query(`DELETE FROM users WHERE id=$1`, [message.id], err => {
+          if (err) {
+            socket.emit('adminRemoveUser', {
+              status: 406,
+              data: { error: err }
+            });
+          } else {
+            socket.emit('adminRemoveUser', { status: 200 });
+            adminUsers(socket);
           }
-        );
+        });
       } else {
         socket.emit('adminRemoveUser', { status: 400 });
       }
@@ -470,7 +459,73 @@ const adminSetUserPrivilage = async (socket, message) => {
     });
 };
 
-const adminImportUsers = async (socket, message) => {};
+const adminImportUsers = async (socket, message) => {
+  await userCSV
+    .validate(message)
+    .catch(err => socket.emit('adminRegenUserToken', { status: 400, err: err }))
+    .then(async valid => {
+      if (valid.deleteUsers) {
+        await pool.query('DELETE FROM users WHERE id!=$1', [socket.user.id]);
+      }
+      var parsedCSV = [];
+      if (valid.head) {
+        let test =
+          '"name","surname","email","rightToVote","admin"\n"Andrzej","Gębura","420@student.pwr.edu.pl","true","false"';
+        parsedCSV = papa.parse(string, {
+          header: true
+        });
+        console.log(test);
+        console.log(parsedCSV);
+      } else {
+      }
+      for (const [i, elem] of parsedCSV) {
+        parsedCSV[i].rightToVote = JSON.decode(elem.rightToVote);
+        parsedCSV[i].admin = JSON.decode(elem.admin);
+      }
+      console.log(parsedCSV);
+      //newUser.validate(parsedCSV[0]);
+    });
+};
+
+const adminRegenUserToken = async (socket, message) => {
+  idValidation
+    .validate(message)
+    .catch(err => {
+      console.log(err);
+    })
+    .then(valid => {
+      if (valid) {
+        regenUserToken(message.id).then(err => {
+          if (err) {
+            socket.emit('adminRegenUserToken'), { status: 400, err: err };
+          } else {
+            socket.emit('adminRegenUserToken', { status: 200 });
+            adminUsers(socket);
+          }
+        });
+      } else {
+        socket.emit('adminRegenUserToken', { status: 400 });
+      }
+    });
+};
+
+const adminRegenAllUserTokens = async socket => {
+  var x = 0;
+  ids = await pool.query('SELECT id FROM users', async (err, res) => {
+    for (const element of res.rows) {
+      const err = await regenUserToken(element.id);
+      if (err) {
+        x++;
+      }
+    }
+    if (x > 0) {
+      socket.emit('adminRegenAllUserTokens', { status: 400, err: err });
+    } else {
+      socket.emit('adminRegenAllUserTokens', { status: 200 });
+    }
+    adminUsers(socket);
+  });
+};
 
 module.exports = {
   adminRefresh,
@@ -488,5 +543,7 @@ module.exports = {
   adminModifyUser,
   adminRemoveUser,
   adminSetUserPrivilage,
+  adminRegenUserToken,
+  adminRegenAllUserTokens,
   adminImportUsers
 };

@@ -26,6 +26,8 @@ const {
   adminModifyUser,
   adminRemoveUser,
   adminSetUserPrivilage,
+  adminRegenUserToken,
+  adminRegenAllUserTokens,
   adminImportUsers
 } = require('./controllers/socketController');
 const pool = require('./db');
@@ -100,6 +102,16 @@ io.on('connect', async socket => {
   );
   socket.on('adminRemoveUser', message =>
     authorizeAdmin(socket, adminRemoveUser, message)
+  );
+  socket.on('adminRegenUserToken', message =>
+    authorizeAdmin(socket, adminRegenUserToken, message)
+  );
+  socket.on('adminRegenAllUserTokens', () =>
+    authorizeAdmin(socket, adminRegenAllUserTokens)
+  );
+
+  socket.on('adminImportUsers', message =>
+    authorizeAdmin(socket, adminImportUsers, message)
   );
 });
 

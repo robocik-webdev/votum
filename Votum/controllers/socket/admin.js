@@ -43,8 +43,8 @@ const authorizeAdmin = async (socket, next, data = {}) => {
       }
     })
     .catch(err => {
-      console.log('Bad request!', err);
       return false;
+      throw new ValidationError('Not admin');
     });
 };
 
@@ -158,7 +158,9 @@ const adminRemoveAnswer = async (socket, message) => {
           }
         );
       } else {
-        console.log('invalid');
+        socket.emit('adminRemoveAnswer', {
+          status: 400
+        });
       }
     });
 };
@@ -459,31 +461,95 @@ const adminSetUserPrivilage = async (socket, message) => {
     });
 };
 
+const addMultipleUsers = async users => {
+  var p = new Promise(async res => {
+    var errCount = 0;
+    var errReason = [];
+    var promises = [];
+
+    for (const user of users) {
+      promises.push(
+        pool
+          .query(
+            'INSERT INTO users (name, surname, email, right_to_vote, admin, token) VALUES($1,$2,$3,$4,$5,$6)',
+            [
+              user.name,
+              user.surname,
+              user.email,
+              user.rightToVote,
+              user.admin,
+              makeToken(8)
+            ]
+          )
+          .catch(err => {
+            errCount++;
+            errReason.push(err);
+          })
+      );
+    }
+    Promise.all(promises).then(() => {
+      if (errCount == 0) {
+        res({
+          status: 200,
+          data: { addedUsers: promises.length }
+        });
+      } else {
+        res({
+          status: 300,
+          data: {
+            addedUsers: promises.length - errCount,
+            errorCount: errCount,
+            errors: errReason
+          }
+        });
+      }
+    });
+  });
+  return p;
+};
+
 const adminImportUsers = async (socket, message) => {
   await userCSV
     .validate(message)
     .catch(err => socket.emit('adminRegenUserToken', { status: 400, err: err }))
     .then(async valid => {
       if (valid.deleteUsers) {
+        await pool.query('DELETE FROM users_has_questions WHERE users_id!=$1', [
+          socket.user.id
+        ]);
         await pool.query('DELETE FROM users WHERE id!=$1', [socket.user.id]);
       }
       var parsedCSV = [];
       if (valid.head) {
-        let test =
-          '"name","surname","email","rightToVote","admin"\n"Andrzej","Gębura","420@student.pwr.edu.pl","true","false"';
-        parsedCSV = papa.parse(string, {
+        parsedCSV = papa.parse(valid.csv, {
           header: true
         });
-        console.log(test);
-        console.log(parsedCSV);
       } else {
+        parsedCSV = papa.parse(
+          'name,surname,email,rightToVote,admin\n' + valid.csv,
+          {
+            header: true
+          }
+        );
       }
-      for (const [i, elem] of parsedCSV) {
-        parsedCSV[i].rightToVote = JSON.decode(elem.rightToVote);
-        parsedCSV[i].admin = JSON.decode(elem.admin);
+      var i = 0;
+      try {
+        var data = Array.from(parsedCSV.data);
+        for (const elem of data) {
+          data[i].rightToVote = JSON.parse(elem.rightToVote);
+          data[i].admin = JSON.parse(elem.admin);
+          i++;
+        }
+        addMultipleUsers(data).then(res => {
+          adminUsers(socket);
+          socket.emit('adminImportUsers', res);
+        });
+      } catch (e) {
+        socket.emit('adminImportUsers', {
+          status: 406,
+          data: { error: e }
+        });
       }
-      console.log(parsedCSV);
-      //newUser.validate(parsedCSV[0]);
     });
 };
 

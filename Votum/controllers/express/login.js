@@ -5,13 +5,17 @@ require('dotenv').config();
 
 const login = async (token, res) => {
   const potentialLogin = await pool.query(
-    `SELECT id, token, email, admin FROM users u WHERE u.token='${[token]}'`
+    `SELECT id, name, surname, token, email, admin FROM users u WHERE u.token='${[
+      token
+    ]}'`
   );
 
   if (potentialLogin.rowCount > 0) {
     jwtSign(
       {
         token: token,
+        name: potentialLogin.rows[0].name,
+        surname: potentialLogin.rows[0].surname,
         id: potentialLogin.rows[0].id
       },
       process.env.JWT_SECRET,
@@ -21,6 +25,8 @@ const login = async (token, res) => {
         res.json({
           loggedIn: true,
           admin: potentialLogin.rows[0].admin,
+          name: potentialLogin.rows[0].name,
+          surname: potentialLogin.rows[0].surname,
           token
         });
       })
@@ -29,7 +35,6 @@ const login = async (token, res) => {
         res.json({ loggedIn: false, status: 'uhhhh' });
       });
   } else {
-    console.log('not good');
     res.json({ loggedIn: false, status: 'Wrong token!' });
   }
 };
@@ -39,7 +44,6 @@ const loginPost = async (req, res) => {
 };
 
 const loginGet = async (req, res) => {
-  console.log(req.query.token);
   login([req.query.token], res);
 };
 

@@ -8,6 +8,7 @@ const authRouter = require('./routers/authRouter');
 const {
   initializeUser,
   authorizeUser,
+  getCurrentUser,
   questions,
   openQuestion,
   vote,
@@ -62,6 +63,8 @@ io.on('connect', async socket => {
   socket.on('questions', () => questions(socket));
 
   socket.on('vote', message => vote(socket, message));
+
+  socket.on('getCurrentUser', () => getCurrentUser(socket));
 
   // Admin section
   socket.on('adminRefresh', () => authorizeAdmin(socket, adminRefresh));

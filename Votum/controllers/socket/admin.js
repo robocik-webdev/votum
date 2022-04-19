@@ -341,12 +341,11 @@ const adminSetQuestionShowAnswers = async (socket, message) => {
 const adminSeedDatabase = async socket => {
   var path = process.cwd() + '/sql/seed.sql';
   var sql = fs.readFileSync(path).toString();
-  console.log(sql);
   pool.query(sql, [], (err, res) => {
     if (err) {
-      socket.emit('adminSeedDatabase', { status: 200 });
+      socket.emit('adminSeedDatabase', { status: 400, error: err });
     } else {
-      socket.emit('adminSeedDatabase', { status: 400 });
+      socket.emit('adminSeedDatabase', { status: 200 });
     }
   });
 };

@@ -29,7 +29,8 @@ const {
   adminSetUserPrivilage,
   adminRegenUserToken,
   adminRegenAllUserTokens,
-  adminImportUsers
+  adminImportUsers,
+  adminSeedDatabase
 } = require('./controllers/socketController');
 const pool = require('./db');
 
@@ -115,6 +116,10 @@ io.on('connect', async socket => {
 
   socket.on('adminImportUsers', message =>
     authorizeAdmin(socket, adminImportUsers, message)
+  );
+
+  socket.on('adminSeedDatabase', () =>
+    authorizeAdmin(socket, adminSeedDatabase)
   );
 });
 

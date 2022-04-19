@@ -4,6 +4,7 @@ const availableQuestions = require('../../utils/availableQuestions');
 const makeToken = require('../../utils/makeToken');
 const regenUserToken = require('../../utils/regenUserToken');
 const papa = require('papaparse');
+let fs = require('fs');
 
 const {
   newAnswer,
@@ -337,6 +338,19 @@ const adminSetQuestionShowAnswers = async (socket, message) => {
     });
 };
 
+const adminSeedDatabase = async socket => {
+  var path = process.cwd() + '/sql/seed.sql';
+  var sql = fs.readFileSync(path).toString();
+  console.log(sql);
+  pool.query(sql, [], (err, res) => {
+    if (err) {
+      socket.emit('adminSeedDatabase', { status: 200 });
+    } else {
+      socket.emit('adminSeedDatabase', { status: 400 });
+    }
+  });
+};
+
 const adminAddUser = async (socket, message) => {
   newUser
     .validate(message)
@@ -611,5 +625,6 @@ module.exports = {
   adminSetUserPrivilage,
   adminRegenUserToken,
   adminRegenAllUserTokens,
-  adminImportUsers
+  adminImportUsers,
+  adminSeedDatabase
 };

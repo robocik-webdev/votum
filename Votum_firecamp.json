@@ -1,0 +1,731 @@
+{
+    "meta": {
+        "__export_time": 1651342929219,
+        "__export_app": "firecamp_v2.7.0 ↺",
+        "__export_version": 1
+    },
+    "project": {
+        "name": "Votum",
+        "description": "",
+        "auth": {},
+        "scripts": {
+            "pre": "",
+            "post": "",
+            "test": ""
+        },
+        "meta": {
+            "active_auth": "no_auth"
+        }
+    },
+    "modules": [],
+    "requests": [
+        {
+            "meta": {
+                "name": "Admin",
+                "description": "needs admin token to add user",
+                "type": "socketio",
+                "version": "2.0"
+            },
+            "url": {
+                "slashes": true,
+                "protocol": "http:",
+                "hash": "",
+                "pathname": "/",
+                "auth": "",
+                "host": "127.0.0.1:8000",
+                "port": "8000",
+                "hostname": "127.0.0.1",
+                "password": "",
+                "username": "",
+                "origin": "http://127.0.0.1:8000",
+                "href": "http://127.0.0.1:8000/",
+                "query_params": []
+            },
+            "config": {
+                "version": "v4",
+                "rejectUnauthorized": false,
+                "timeout": 20000,
+                "reconnection": false,
+                "reconnectionAttempts": 3,
+                "reconnectionDelay": 1000,
+                "reconnectionDelayMax": 5000,
+                "on_connect_listeners": []
+            },
+            "connections": [
+                {
+                    "name": "Default",
+                    "forceNew": false,
+                    "namespace": "",
+                    "path": "",
+                    "ping": false,
+                    "ping_interval": 3000,
+                    "transports": {
+                        "websocket": true,
+                        "polling": true
+                    },
+                    "headers": [],
+                    "query_params": [],
+                    "auth": [
+                        {
+                            "key": "token",
+                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6WyJQM1J1T2RWZyJdLCJuYW1lIjoiTWlrb8WCYWoiLCJzdXJuYW1lIjoiS2HFum1pZXJjemFrIiwiaWQiOjEsImlhdCI6MTY1MDMwOTMwNywiZXhwIjoxNjUwMzk1NzA3fQ.PISvQeztj8Ul50H_CEM0JQgK4YUFLS_JeffeQ5OOrfo",
+                            "disable": false,
+                            "type": "text"
+                        }
+                    ],
+                    "is_default": true
+                }
+            ],
+            "listeners": [
+                "adminAddAnswer",
+                "adminQuestions",
+                "adminAddUser",
+                "adminAddQuestion",
+                "adminRemoveUser",
+                "adminRemoveAnswer",
+                "questions",
+                "adminUsers",
+                "openQuestion",
+                "vote",
+                "adminModifyQuestion",
+                "adminModifyUser",
+                "adminModifyAnswer",
+                "adminSetUserPrivilage",
+                "adminRemoveQuestion",
+                "adminSetQuestionShowAnswers",
+                "adminRegenUserToken",
+                "adminRegenAllUserTokens",
+                "adminImportUsers"
+            ],
+            "emitter_collection": [
+                {
+                    "name": "Remove",
+                    "meta": {},
+                    "children": [
+                        {
+                            "name": "adminRemoveQuestion",
+                            "body": [
+                                {
+                                    "meta": {
+                                        "type": "json",
+                                        "envelope": ""
+                                    },
+                                    "payload": "{\n  \"id\":5\n}"
+                                }
+                            ],
+                            "meta": {
+                                "label": "remove question",
+                                "interval": "",
+                                "ack": false
+                            }
+                        },
+                        {
+                            "name": "adminRemoveUser",
+                            "body": [
+                                {
+                                    "meta": {
+                                        "type": "json",
+                                        "envelope": ""
+                                    },
+                                    "payload": "{\n  \"id\":3\n}"
+                                }
+                            ],
+                            "meta": {
+                                "label": "remove user",
+                                "interval": "",
+                                "ack": false
+                            }
+                        },
+                        {
+                            "name": "remove answer",
+                            "body": [
+                                {
+                                    "meta": {
+                                        "type": "json",
+                                        "envelope": ""
+                                    },
+                                    "payload": "{\n  \"id\":3\n}"
+                                }
+                            ],
+                            "meta": {
+                                "label": "",
+                                "interval": "",
+                                "ack": false
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Add",
+                    "meta": {},
+                    "children": [
+                        {
+                            "name": "adminAddUser",
+                            "body": [
+                                {
+                                    "meta": {
+                                        "type": "json",
+                                        "envelope": ""
+                                    },
+                                    "payload": "{\n    \"name\": \"Adrian\",\n    \"surname\": \"Dacko\",\n    \"email\": \"adacko@gmail.com\",\n    \"rightToVote\": true,\n    \"admin\": true\n}"
+                                }
+                            ],
+                            "meta": {
+                                "label": "",
+                                "interval": "",
+                                "ack": false
+                            }
+                        },
+                        {
+                            "name": "adminAddAnswer",
+                            "body": [
+                                {
+                                    "meta": {
+                                        "type": "json",
+                                        "envelope": ""
+                                    },
+                                    "payload": "{\n  \"title\":\"sranie\",\n  \"questionId\":4\n}"
+                                }
+                            ],
+                            "meta": {
+                                "label": "",
+                                "interval": "",
+                                "ack": false
+                            }
+                        },
+                        {
+                            "name": "adminAddQuestion",
+                            "body": [
+                                {
+                                    "meta": {
+                                        "type": "json",
+                                        "envelope": ""
+                                    },
+                                    "payload": "{\n  \"title\":\"Granie czy sranie?\",\n  \"possibleAnswers\":3,\n  \"showAnswers\":true,\n  \"openTime\": \"2022-04-10 22:00:20\",\n  \"closeTime\":  \"2022-04-10 22:15:25\"\n}"
+                                }
+                            ],
+                            "meta": {
+                                "label": "",
+                                "interval": "",
+                                "ack": false
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Modify",
+                    "meta": {},
+                    "children": [
+                        {
+                            "name": "adminSetQuestionShowAnswers",
+                            "body": [
+                                {
+                                    "meta": {
+                                        "type": "json",
+                                        "envelope": ""
+                                    },
+                                    "payload": "{\n  \"id\":3,\n  \"showAnswers\":true\n}"
+                                }
+                            ],
+                            "meta": {
+                                "label": "",
+                                "interval": "",
+                                "ack": false
+                            }
+                        },
+                        {
+                            "name": "adminRegenAllUserTokens",
+                            "body": [
+                                {
+                                    "payload": "",
+                                    "meta": {
+                                        "type": "text",
+                                        "envelope": ""
+                                    }
+                                }
+                            ],
+                            "meta": {
+                                "label": "",
+                                "interval": "",
+                                "ack": false
+                            }
+                        },
+                        {
+                            "name": "adminRegenUserToken",
+                            "body": [
+                                {
+                                    "meta": {
+                                        "type": "json",
+                                        "envelope": ""
+                                    },
+                                    "payload": "{\n  \"id\":2\n}"
+                                }
+                            ],
+                            "meta": {
+                                "label": "",
+                                "interval": "",
+                                "ack": false
+                            }
+                        },
+                        {
+                            "name": "adminModifyQuestion",
+                            "body": [
+                                {
+                                    "meta": {
+                                        "type": "json",
+                                        "envelope": ""
+                                    },
+                                    "payload": "{\n    \"id\": 9,\n    \"title\": \"ttttt\",\n    \"possibleAnswers\": 4,\n    \"showAnswers\":true,\n    \"openTime\": \"2022-11-07 08:35:20\",\n    \"closeTime\": \"2022-11-07 08:35:25\"\n}"
+                                }
+                            ],
+                            "meta": {
+                                "label": "",
+                                "interval": "",
+                                "ack": false
+                            }
+                        },
+                        {
+                            "name": "adminModifyUser",
+                            "body": [
+                                {
+                                    "meta": {
+                                        "type": "json",
+                                        "envelope": ""
+                                    },
+                                    "payload": "{\n    \"id\": 5,\n    \"name\": \"Jakub\",\n    \"surname\": \"Borowiec\",\n    \"email\": \"kborowiec25@gmail.com\",\n    \"rightToVote\": true,\n    \"admin\": true\n}"
+                                }
+                            ],
+                            "meta": {
+                                "label": "",
+                                "interval": "",
+                                "ack": false
+                            }
+                        },
+                        {
+                            "name": "adminModifyAnswer",
+                            "body": [
+                                {
+                                    "meta": {
+                                        "type": "json",
+                                        "envelope": ""
+                                    },
+                                    "payload": "{\n  \"id\":3,\n  \"title\": \"TAAAAAK\"\n}"
+                                }
+                            ],
+                            "meta": {
+                                "label": "",
+                                "interval": "",
+                                "ack": false
+                            }
+                        },
+                        {
+                            "name": "adminSetUserPrivilage",
+                            "body": [
+                                {
+                                    "meta": {
+                                        "type": "json",
+                                        "envelope": ""
+                                    },
+                                    "payload": "{\n  \"id\":1,\n  \"rightToVote\": true\n}"
+                                }
+                            ],
+                            "meta": {
+                                "label": "",
+                                "interval": "",
+                                "ack": false
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "others",
+                    "meta": {},
+                    "children": [
+                        {
+                            "name": "adminQuestions",
+                            "body": [
+                                {
+                                    "payload": "",
+                                    "meta": {
+                                        "type": "text",
+                                        "envelope": ""
+                                    }
+                                }
+                            ],
+                            "meta": {
+                                "label": "",
+                                "interval": "",
+                                "ack": false
+                            }
+                        },
+                        {
+                            "name": "adminUsers",
+                            "body": [
+                                {
+                                    "payload": "",
+                                    "meta": {
+                                        "type": "text",
+                                        "envelope": ""
+                                    }
+                                }
+                            ],
+                            "meta": {
+                                "label": "",
+                                "interval": "",
+                                "ack": false
+                            }
+                        },
+                        {
+                            "name": "adminImportUsers",
+                            "body": [
+                                {
+                                    "meta": {
+                                        "type": "json",
+                                        "envelope": ""
+                                    },
+                                    "payload": "{\n  \"csv\": \"name,surname,email,rightToVote,admin\\nkamil,czop,testt@gmail.com,true,true\\nJakub,Borowski,testt@gmail.com,true,false\",\n  \"deleteUsers\":true,\n  \"head\":true\n}"
+                                }
+                            ],
+                            "meta": {
+                                "label": "",
+                                "interval": "",
+                                "ack": false
+                            }
+                        },
+                        {
+                            "name": "adminRefresh",
+                            "body": [
+                                {
+                                    "payload": "",
+                                    "meta": {
+                                        "type": "text",
+                                        "envelope": ""
+                                    }
+                                }
+                            ],
+                            "meta": {
+                                "label": "",
+                                "interval": "",
+                                "ack": false
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "normalUser",
+                    "meta": {},
+                    "children": [
+                        {
+                            "name": "questions",
+                            "body": [
+                                {
+                                    "payload": "",
+                                    "meta": {
+                                        "type": "text",
+                                        "envelope": ""
+                                    }
+                                }
+                            ],
+                            "meta": {
+                                "label": "",
+                                "interval": "",
+                                "ack": false
+                            }
+                        },
+                        {
+                            "name": "openQuestion",
+                            "body": [
+                                {
+                                    "payload": "",
+                                    "meta": {
+                                        "type": "text",
+                                        "envelope": ""
+                                    }
+                                }
+                            ],
+                            "meta": {
+                                "label": "",
+                                "interval": "",
+                                "ack": false
+                            }
+                        },
+                        {
+                            "name": "getCurrentUser",
+                            "body": [
+                                {
+                                    "payload": "",
+                                    "meta": {
+                                        "type": "text",
+                                        "envelope": ""
+                                    }
+                                }
+                            ],
+                            "meta": {
+                                "label": "",
+                                "interval": "",
+                                "ack": false
+                            }
+                        },
+                        {
+                            "name": "vote",
+                            "body": [
+                                {
+                                    "meta": {
+                                        "type": "json",
+                                        "envelope": ""
+                                    },
+                                    "payload": "{\n  \"questionID\": 3,\n  \"answers\": [7,8]\n}"
+                                }
+                            ],
+                            "meta": {
+                                "label": "",
+                                "interval": "",
+                                "ack": false
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "adminRemoveAnswer",
+                    "body": [
+                        {
+                            "meta": {
+                                "type": "text",
+                                "envelope": ""
+                            },
+                            "payload": "{\n  \"id\":3\n}"
+                        }
+                    ],
+                    "meta": {
+                        "label": "Remove answer",
+                        "interval": "",
+                        "ack": false
+                    }
+                },
+                {
+                    "name": "adminRemoveUser",
+                    "body": [
+                        {
+                            "meta": {
+                                "type": "json",
+                                "envelope": ""
+                            },
+                            "payload": "{\n  \"id\":2\n}"
+                        }
+                    ],
+                    "meta": {
+                        "label": "Remove user",
+                        "interval": "",
+                        "ack": false
+                    }
+                },
+                {
+                    "name": "adminRemoveQuestion",
+                    "body": [
+                        {
+                            "meta": {
+                                "type": "json",
+                                "envelope": ""
+                            },
+                            "payload": "{\n  \"id\":2\n}"
+                        }
+                    ],
+                    "meta": {
+                        "label": "Remove Question",
+                        "interval": "",
+                        "ack": false
+                    }
+                }
+            ]
+        },
+        {
+            "meta": {
+                "name": "User",
+                "description": "needs admin token to add user",
+                "type": "socketio",
+                "version": "2.0"
+            },
+            "url": {
+                "slashes": true,
+                "protocol": "http:",
+                "hash": "",
+                "pathname": "/",
+                "auth": "",
+                "host": "127.0.0.1:8000",
+                "port": "8000",
+                "hostname": "127.0.0.1",
+                "password": "",
+                "username": "",
+                "origin": "http://127.0.0.1:8000",
+                "href": "http://127.0.0.1:8000/",
+                "query_params": []
+            },
+            "config": {
+                "version": "v4",
+                "rejectUnauthorized": false,
+                "timeout": 20000,
+                "reconnection": false,
+                "reconnectionAttempts": 3,
+                "reconnectionDelay": 1000,
+                "reconnectionDelayMax": 5000
+            },
+            "connections": [
+                {
+                    "name": "Default",
+                    "forceNew": false,
+                    "namespace": "",
+                    "path": "",
+                    "ping": false,
+                    "ping_interval": 3000,
+                    "transports": {
+                        "websocket": true,
+                        "polling": true
+                    },
+                    "headers": [],
+                    "query_params": [],
+                    "auth": [
+                        {
+                            "key": "token",
+                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6WyJXNEQwVzFDMyJdLCJpZCI6MiwiaWF0IjoxNjQ5NjI1MzU3LCJleHAiOjE2NDk3MTE3NTd9.v9uM3HPOjn7lA-7u0vxZtIYqS_SOPdf1k4I1QmGudzk",
+                            "disable": false,
+                            "type": "text"
+                        }
+                    ],
+                    "is_default": true
+                }
+            ],
+            "listeners": [
+                "votum",
+                "message",
+                "openQuestion",
+                "vote",
+                "questions"
+            ],
+            "emitter_collection": []
+        },
+        {
+            "meta": {
+                "name": "login",
+                "description": "",
+                "active_auth": "inherit",
+                "type": "api",
+                "version": "1.0"
+            },
+            "url": {
+                "slashes": true,
+                "protocol": "http:",
+                "hash": "",
+                "query": "",
+                "pathname": "/auth/login",
+                "auth": "",
+                "host": "127.0.0.1:8000",
+                "port": "8000",
+                "hostname": "127.0.0.1",
+                "password": "",
+                "username": "",
+                "origin": "http://127.0.0.1:8000",
+                "href": "http://127.0.0.1:8000/auth/login",
+                "query_params": [],
+                "path_params": []
+            },
+            "method": "POST",
+            "headers": [
+                {
+                    "key": "token",
+                    "value": "WADOWICE",
+                    "disable": false,
+                    "type": "text"
+                }
+            ],
+            "config": {
+                "ORIGIN": "",
+                "USERAGENT": "",
+                "TIMEOUT_MS": 0,
+                "REJECT_UNAUTHORIZED": false,
+                "FOLLOWLOCATION": true,
+                "MAXREDIRS": -1,
+                "HTTP_VERSION": "V2Tls"
+            },
+            "scripts": {
+                "pre": "",
+                "post": "",
+                "test": ""
+            },
+            "bodies": [
+                {
+                    "name": "Default",
+                    "body": {},
+                    "meta": {
+                        "active_body_type": "noBody",
+                        "is_default": true
+                    }
+                }
+            ]
+        },
+        {
+            "meta": {
+                "name": "login normal",
+                "description": "",
+                "active_auth": "inherit",
+                "type": "api",
+                "version": "1.0"
+            },
+            "url": {
+                "slashes": false,
+                "protocol": "",
+                "hash": "",
+                "query": "",
+                "pathname": "",
+                "auth": "",
+                "host": "",
+                "port": "",
+                "hostname": "",
+                "password": "",
+                "username": "",
+                "origin": "null",
+                "href": "",
+                "query_params": []
+            },
+            "method": "GET",
+            "headers": [],
+            "config": {
+                "ORIGIN": "",
+                "USERAGENT": "",
+                "TIMEOUT_MS": 0,
+                "REJECT_UNAUTHORIZED": false,
+                "FOLLOWLOCATION": true,
+                "MAXREDIRS": -1,
+                "HTTP_VERSION": "V2Tls"
+            },
+            "scripts": {
+                "pre": "",
+                "post": "",
+                "test": ""
+            },
+            "bodies": [
+                {
+                    "name": "Default",
+                    "body": {},
+                    "meta": {
+                        "active_body_type": "noBody",
+                        "is_default": true
+                    }
+                }
+            ]
+        }
+    ],
+    "environments": [
+        {
+            "name": "Production",
+            "variables": {
+                "variable_name": "variable_value"
+            }
+        },
+        {
+            "name": "Development",
+            "variables": {
+                "variable_name": "variable_value"
+            }
+        }
+    ]
+}

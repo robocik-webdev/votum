@@ -29,6 +29,32 @@
 <main>
   <button on:click={() => socket?.emit('adminUsers')}>Users</button>
   <button on:click={() => socket?.emit('adminQuestions')}>Questions</button>
+  <button
+    on:click={() =>
+      socket?.emit('adminAddUser', {
+        name: 'Adrian',
+        surname: 'Dacko',
+        email: 'adacko@gmail.com',
+        rightToVote: true,
+        admin: true
+      })}>Add user</button
+  >
+  <button on:click={() => socket?.emit('adminRemoveUser', { id: 8 })}
+    >Remove user</button
+  >
+  <button
+    on:click={() =>
+      socket?.emit('adminAddQuestion', {
+        title: 'Granie czy sranie?',
+        possibleAnswers: 3,
+        showAnswers: true,
+        openTime: '2022-04-10 22:00:20',
+        closeTime: '2022-04-10 22:15:25'
+      })}>Add question</button
+  >
+  <button on:click={() => socket?.emit('adminRemoveQuestion', { id: 6 })}
+    >Remove question</button
+  >
 </main>
 
 <style>

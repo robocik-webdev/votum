@@ -16,15 +16,20 @@ router.route('/questions').get(async (req, res) => {
     }
   });
 });
-router.route('/questions/:id').get((req, res) => {
-  checkIfAdmin(req).then(result => {
-    if (result.admin) {
-      adminQuestions.getQuestion(req, res);
-    } else {
-      userQuestions.getQuestion(req, res);
-    }
+router
+  .route('/questions/:id')
+  .get((req, res) => {
+    checkIfAdmin(req).then(result => {
+      if (result.admin) {
+        adminQuestions.getQuestion(req, res);
+      } else {
+        userQuestions.getQuestion(req, res);
+      }
+    });
+  })
+  .delete((req, res) => {
+    authorizeAdmin(req, res, adminQuestions.deleteQuestion);
   });
-});
 
 router.patch('/questions/:id/showResults', (req, res) => {
   authorizeAdmin(req, res, adminQuestions.setShowResults);
@@ -32,6 +37,10 @@ router.patch('/questions/:id/showResults', (req, res) => {
 
 router.get('/questions/:id/open', (req, res) => {
   userQuestions.openQuestion(req, res);
+});
+
+router.post('/questions/:id/vote', (req, res) => {
+  userQuestions.vote(req, res);
 });
 
 module.exports = router;

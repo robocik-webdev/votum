@@ -2,6 +2,8 @@ const pool = require('../../../../db');
 const { questionShowAnswers } = require('../../../../schema/adminSchema');
 
 const setShowResults = async (req, res) => {
+  let message = req.body;
+  message.id = req.params.id;
   questionShowAnswers
     .validate(message)
     .catch(err => {
@@ -17,7 +19,7 @@ const setShowResults = async (req, res) => {
         pool.query(
           'UPDATE questions SET show_results=$1 where id=$2',
           [message.showResults, message.id],
-          (err, res) => {
+          (err, result) => {
             if (err) {
               res.status(406).json({
                 success: false,
@@ -31,12 +33,6 @@ const setShowResults = async (req, res) => {
             }
           }
         );
-      } else {
-        res.status(400).json({
-          success: false,
-          status: 400,
-          error: 'Nieprawidłowe zapytanie'
-        });
       }
     });
 };

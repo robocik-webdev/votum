@@ -1,12 +1,20 @@
-const { voteValidation } = require('../../../../schema/vote');
+const voteValidation = require('../../../../schema/vote');
 const pool = require('../../../../db');
 const checkPrivilage = require('../../../../utils/checkPrivilage');
 
-const vote = async (socket, message) => {
+const vote = async (req, res) => {
+  let message = req.body;
+  message.id = req.params.id;
+  let userID = req.session.userID;
   voteValidation
     .validate(message)
-    .catch(() => {
-      socket.emit('vote', { status: 400 });
+    .catch(err => {
+      res.status(400).json({
+        success: false,
+        status: 400,
+        error: 'Nieprawidłowe zapytanie',
+        errorDetails: err
+      });
     })
     .then(async valid => {
       if (valid) {
@@ -15,7 +23,7 @@ const vote = async (socket, message) => {
           [message.id]
         );
         if (question.rowCount == 1) {
-          const status = await checkPrivilage(socket.user, message.id);
+          const status = await checkPrivilage(userID, message.id);
           if (status == true) {
             const possibleIDs = await pool.query(
               `SELECT id FROM answers WHERE questions_id=$1`,
@@ -27,7 +35,7 @@ const vote = async (socket, message) => {
             }
             if (
               message.answers.every(element => indexes.includes(element)) &&
-              message.answers.length <= question.rows[0].possibleAnswers
+              message.answers.length <= question.rows[0].maxAnswers
             ) {
               message.answers.forEach(element => {
                 pool.query(
@@ -37,30 +45,31 @@ const vote = async (socket, message) => {
               });
               pool.query(
                 `INSERT INTO users_has_questions (id, users_id, questions_id) VALUES (DEFAULT, $1, $2)`,
-                [socket.user.id, message.id]
+                [userID, message.id]
               );
-              socket.emit('vote', { status: 200 });
+              res.status(200).json({ success: true, status: 200 });
               return true;
             } else {
-              socket.emit('vote', {
+              res.status(400).json({
+                success: false,
                 status: 400,
-                data: { message: 'Wrong answers' }
+                error: 'Nieprawidłowe odpowiedzi'
               });
             }
           } else {
-            socket.emit('vote', {
+            res.status(403).json({
+              success: false,
               status: 403,
-              data: { message: 'You have no privilage to vote' }
+              error: 'Brak uprawnień do głosowania'
             });
           }
         } else {
-          socket.emit('vote', {
+          res.status(403).json({
+            success: false,
             status: 403,
-            data: { message: "Question hasn't opened yet" }
+            error: 'Pytanie się jeszcze nie otworzyło'
           });
         }
-      } else {
-        socket.emit('vote', { status: 400, data: { message: 'Invalid json' } });
       }
     });
 };

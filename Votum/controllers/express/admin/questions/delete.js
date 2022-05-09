@@ -3,7 +3,7 @@ const { idValidation } = require('../../../../schema/adminSchema');
 
 const deleteQuestion = async (req, res) => {
   idValidation
-    .validate(message)
+    .validate(req.params)
     .catch(err => {
       res.status(400).json({
         success: false,
@@ -16,7 +16,7 @@ const deleteQuestion = async (req, res) => {
       if (valid) {
         pool.query(
           `DELETE FROM users_has_questions WHERE questions_id=$1`,
-          [message.id],
+          [req.params.id],
           (err, result) => {
             if (err) {
               res.status(406).json({
@@ -28,7 +28,7 @@ const deleteQuestion = async (req, res) => {
             } else {
               pool.query(
                 `DELETE FROM answered_questions WHERE questions_id=$1`,
-                [message.id],
+                [req.params.id],
                 (err, result) => {
                   if (err) {
                     res.status(406).json({
@@ -40,7 +40,7 @@ const deleteQuestion = async (req, res) => {
                   } else {
                     pool.query(
                       `DELETE FROM answers WHERE questions_id=$1`,
-                      [message.id],
+                      [req.params.id],
                       (err, result) => {
                         if (err) {
                           res.status(406).json({
@@ -52,7 +52,7 @@ const deleteQuestion = async (req, res) => {
                         } else {
                           pool.query(
                             `DELETE FROM questions WHERE id=$1`,
-                            [message.id],
+                            [req.params.id],
                             (err, result) => {
                               if (err) {
                                 res.status(406).json('adminRemoveQuestion', {
@@ -77,12 +77,6 @@ const deleteQuestion = async (req, res) => {
             }
           }
         );
-      } else {
-        res.status(400).json({
-          success: false,
-          status: 400,
-          error: 'Nieprawidłowe zapytanie'
-        });
       }
     });
 };

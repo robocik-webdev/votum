@@ -1,14 +1,14 @@
 const pool = require('../db');
 
-const checkPrivilage = async (user, questionID) => {
+const checkPrivilage = async (userID, questionID) => {
   const privilage = await pool.query(
     `SELECT right_to_vote FROM users WHERE id=$1`,
-    [user.id]
+    [userID]
   );
-  if (privilage.rowCount == 1 && privilage.rows[0].right_to_vote == true) {
+  if (privilage.rowCount > 0 && privilage.rows[0].rightToVote) {
     const voted = await pool.query(
       `SELECT id FROM users_has_questions WHERE users_id=$1 AND questions_id=$2`,
-      [user.id, questionID]
+      [userID, questionID]
     );
     if (voted.rowCount == 0) {
       return true;

@@ -1,6 +1,5 @@
 const pool = require('../db');
 const makeToken = require('./makeToken');
-const ioAdminUsers = require('../controllers/socket/admin').adminUsers;
 
 const addMultipleUsers = async users => {
   var p = new Promise(async res => {

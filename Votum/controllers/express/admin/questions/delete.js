@@ -1,5 +1,5 @@
 const pool = require('../../../../db');
-const idValidation = require('../../../../schema/adminSchema');
+const { idValidation } = require('../../../../schema/adminSchema');
 
 const deleteQuestion = async (req, res) => {
   idValidation

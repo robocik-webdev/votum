@@ -1,4 +1,35 @@
 const pool = require('../../../db');
+
+const checkIfAdmin = async req => {
+  var p = new Promise(async res => {
+    var admin = false;
+    var promises = [];
+
+    promises.push(
+      pool
+        .query(`SELECT admin FROM users u WHERE u.id=$1`, [req.session.userID])
+        .then(result => {
+          if (result.rows.length > 0) {
+            admin = result.rows[0].admin;
+          }
+        })
+    );
+
+    Promise.all(promises).then(() => {
+      if (admin) {
+        res({
+          admin: true
+        });
+      } else {
+        res({
+          admin: false
+        });
+      }
+    });
+  });
+  return p;
+};
+
 const authorizeAdmin = async (req, res, next) => {
   const id = req.session.userID;
 
@@ -27,4 +58,4 @@ const authorizeAdmin = async (req, res, next) => {
   }
 };
 
-module.exports = authorizeAdmin;
+module.exports = { authorizeAdmin, checkIfAdmin };

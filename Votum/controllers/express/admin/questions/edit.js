@@ -1,5 +1,5 @@
 const pool = require('../../../../db');
-const modifyQuestion = require('../../../../schema/adminSchema');
+const { modifyQuestion } = require('../../../../schema/adminSchema');
 
 const editQuestion = async (req, res) => {
   modifyQuestion

@@ -1,6 +1,6 @@
-const voteValidation = require('../../schema/vote');
-const pool = require('../../db');
-const checkPrivilage = require('../../utils/checkPrivilage');
+const { voteValidation } = require('../../../../schema/vote');
+const pool = require('../../../../db');
+const checkPrivilage = require('../../../../utils/checkPrivilage');
 
 const vote = async (socket, message) => {
   voteValidation

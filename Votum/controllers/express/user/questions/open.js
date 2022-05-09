@@ -1,35 +1,46 @@
-const idValidation = require('../../schema/idValidation');
-const pool = require('../../db');
+const idValidation = require('../../../../schema/idValidation');
+const pool = require('../../../../db');
 
-const openQuestion = async (socket, message) => {
+const openQuestion = async (req, res) => {
   idValidation
-    .validate(message)
-    .catch(() => {
-      console.log('Nope');
+    .validate(req.params)
+    .catch(err => {
+      res.status(400).json({
+        success: false,
+        status: 400,
+        error: 'Niepoprawne zapytanie',
+        errorDetails: err
+      });
     })
     .then(async valid => {
       if (valid) {
         const question = await pool.query(
           `SELECT * FROM questions WHERE id=$1 AND time_open <= now()`,
-          [message.id],
-          async (err, res) => {
+          [valid.id],
+          async (err, result) => {
             if (err) {
-              socket.emit('openQuestion', { status: 403 });
+              res.status(403).json({
+                success: false,
+                status: 403,
+                error: 'Problem z zapytaniem',
+                errorDetails: err
+              });
             } else {
-              if (res.rows.length > 0) {
-                if (res.rows[0].timeClose > Date.now()) {
+              if (result.rows.length > 0) {
+                if (result.rows[0].timeClose > Date.now()) {
                   const answers = await pool.query(
                     `SELECT id, title FROM answers WHERE questions_id=$1`,
-                    [message.id]
+                    [valid.id]
                   );
-                  socket.emit('openQuestion', {
+                  res.status(300).json({
+                    success: true,
                     status: 300,
                     data: {
-                      question: res.rows[0],
+                      question: result.rows[0],
                       answers: answers.rows
                     }
                   });
-                } else if (res.rows[0].showResults == true) {
+                } else if (result.rows[0].showResults) {
                   const answers = await pool.query(
                     `SELECT a.title AS title, count(aq.id) AS count
                     FROM answers a
@@ -38,26 +49,31 @@ const openQuestion = async (socket, message) => {
                     WHERE now() > q.time_close AND q.id = $1
                     GROUP BY q.title, a.title, q.id, a.id
                     ORDER BY q.id, a.id;`,
-                    [message.id]
+                    [valid.id]
                   );
-                  socket.emit('openQuestion', {
+                  res.status(200).json({
+                    success: true,
                     status: 200,
                     data: {
-                      question: res.rows[0],
+                      question: result.rows[0],
                       answers: answers.rows
                     }
                   });
                 } else {
-                  socket.emit('openQuestion', { status: 403 });
+                  res.status(403).json({
+                    success: false,
+                    status: 403,
+                    error: 'Wyniki jeszcze nieudostępnione!'
+                  });
                 }
               } else {
-                socket.emit('openQuestion', { status: 403 });
+                res
+                  .status(403)
+                  .json({ success: false, status: 403, error: 'Niedostępne' });
               }
             }
           }
         );
-      } else {
-        socket.emit('openQuestion', { status: 400 });
       }
     });
 };

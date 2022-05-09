@@ -1,5 +1,5 @@
 const pool = require('../../../../db');
-const questionShowAnswers = require('../../../../schema/adminSchema');
+const { questionShowAnswers } = require('../../../../schema/adminSchema');
 
 const setShowResults = async (req, res) => {
   questionShowAnswers

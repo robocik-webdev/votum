@@ -1,5 +1,5 @@
 const pool = require('../../../../db');
-const newQuestion = require('../../../../schema/adminSchema');
+const { newQuestion } = require('../../../../schema/adminSchema');
 
 const addQuestion = async (req, res) => {
   newQuestion
@@ -45,3 +45,5 @@ const addQuestion = async (req, res) => {
       }
     });
 };
+
+module.exports = addQuestion;

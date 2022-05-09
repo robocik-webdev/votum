@@ -8,12 +8,14 @@ const authorizeAdmin = async (req, res, next) => {
   if (potentialAdmin.rowCount > 0) {
     if (potentialAdmin.rows[0].admin) {
       next(req, res);
+      return 0;
     } else {
       res.status(400).json({
         success: false,
         status: 400,
         error: 'Nieupoważnionym wstęp wzbroniony'
       });
+      return 0;
     }
   } else {
     res.status(400).json({
@@ -21,6 +23,7 @@ const authorizeAdmin = async (req, res, next) => {
       status: 400,
       error: 'Nieupoważnionym wstęp wzbroniony'
     });
+    return 0;
   }
 };
 

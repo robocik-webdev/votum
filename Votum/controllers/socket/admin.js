@@ -48,7 +48,7 @@ const adminQuestions = async socket => {
   const availablePolls = await pool.query(`SELECT * FROM questions`);
   for (const element of availablePolls.rows) {
     availableAnswers = await pool.query(
-      `SELECT * FROM answers where questions_id = ${element.id};`
+      `SELECT * FROM answers where questions_id = ${element.id} ORDER BY id ASC;`
     );
     element.answers = availableAnswers.rows;
   }
@@ -59,7 +59,7 @@ const adminQuestions = async socket => {
 };
 
 const adminUsers = async socket => {
-  const users = await pool.query(`SELECT * FROM users`);
+  const users = await pool.query(`SELECT * FROM users ORDER BY id ASC`);
   socket.emit('adminUsers', {
     success: true,
     status: 200,

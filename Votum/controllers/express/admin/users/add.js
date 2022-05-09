@@ -1,9 +1,11 @@
 const pool = require('../../../../db');
-const newUser = require('../../../../schema/adminSchema');
+const makeToken = require('../../../../utils/makeToken');
+const { newUser } = require('../../../../schema/adminSchema');
+const ioAdminUsers = require('../../../socketController').adminUsers;
 
 const addUser = async (req, res) => {
   newUser
-    .validate(message)
+    .validate(req.body)
     .catch(err => {
       res.status(400).json({
         success: false,
@@ -17,12 +19,12 @@ const addUser = async (req, res) => {
         pool.query(
           `INSERT INTO users (name, surname, email, token, right_to_vote, admin) VALUES ($1,$2,$3,$4,$5,$6);`,
           [
-            message.name,
-            message.surname,
-            message.email,
+            valid.name,
+            valid.surname,
+            valid.email,
             makeToken(8),
-            message.rightToVote,
-            message.admin
+            valid.rightToVote,
+            valid.admin
           ],
           (err, result) => {
             if (err) {
@@ -34,15 +36,10 @@ const addUser = async (req, res) => {
               });
             } else {
               res.status(200).json({ success: true, status: 200 });
+              ioAdminUsers(req.app.get('io'));
             }
           }
         );
-      } else {
-        res.status(400).json({
-          success: false,
-          status: 400,
-          error: 'Nieprawidłowe zapytanie'
-        });
       }
     });
 };

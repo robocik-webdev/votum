@@ -1,7 +1,10 @@
 const pool = require('../../../../db');
-const modifyUser = require('../../../../schema/adminSchema');
+const { modifyUser } = require('../../../../schema/adminSchema');
+const ioAdminUsers = require('../../../socketController').adminUsers;
 
 const editUser = async (req, res) => {
+  var message = req.body;
+  message.id = req.params.id;
   modifyUser
     .validate(message)
     .catch(err => {
@@ -34,6 +37,7 @@ const editUser = async (req, res) => {
               });
             } else {
               res.status(200).json({ success: true, status: 200 });
+              ioAdminUsers(req.app.get('io'));
             }
           }
         );

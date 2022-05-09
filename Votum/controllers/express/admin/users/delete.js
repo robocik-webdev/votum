@@ -1,9 +1,10 @@
 const pool = require('../../../../db');
-const idValidation = require('../../../../schema/adminSchema');
+const ioAdminUsers = require('../../../socketController').adminUsers;
+const idValidation = require('../../../../schema/idValidation');
 
 const deleteUser = async (req, res) => {
   idValidation
-    .validate(message)
+    .validate(req.params)
     .catch(err => {
       res.status(400).json({
         success: false,
@@ -14,7 +15,7 @@ const deleteUser = async (req, res) => {
     })
     .then(valid => {
       if (valid) {
-        pool.query(`DELETE FROM users WHERE id=$1`, [message.id], err => {
+        pool.query(`DELETE FROM users WHERE id=$1`, [valid.id], err => {
           if (err) {
             res.status(406).json({
               success: false,
@@ -24,13 +25,8 @@ const deleteUser = async (req, res) => {
             });
           } else {
             res.status(200).json({ success: true, status: 200 });
+            ioAdminUsers(req.app.get('io'));
           }
-        });
-      } else {
-        res.status(400).json({
-          success: false,
-          status: 400,
-          error: 'Nieprawidłowe zapytanie'
         });
       }
     });

@@ -3,7 +3,7 @@ const deleteUser = require(`./users/delete`);
 const editUser = require('./users/edit');
 const regenToken = require('./users/regenToken');
 const privilageUser = require('./users/setPrivilage');
-const getUsers = require('./users/get');
+const { getUsers, getUser } = require('./users/get');
 
 const users = {
   addUser,
@@ -11,7 +11,8 @@ const users = {
   editUser,
   regenToken,
   privilageUser,
-  getUsers
+  getUsers,
+  getUser
 };
 
 module.exports = users;

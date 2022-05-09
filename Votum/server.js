@@ -57,6 +57,8 @@ const wrap = middleware => (socket, next) =>
   middleware(socket.request, {}, next);
 io.use(wrap(sessionMiddleware));
 
+app.set('io', io);
+
 io.use((socket, next) => {
   const session = socket.request.session;
   if (session && session.authenticated) {

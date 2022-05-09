@@ -4,7 +4,7 @@ DELETE FROM users;
 DELETE FROM answers;
 DELETE FROM questions;
 
-INSERT INTO questions (id, title, possible_answers, time_open, time_close, show_answers) VALUES
+INSERT INTO questions (id, title, max_answers, time_open, time_close, show_results) VALUES
 (1, 'Czy lubisz pizze?', 1, NOW(), NOW() + '2 minute'::interval, TRUE),
 (2, 'Coś zrobił z tą maszynką?!', 2, NOW() + '1 minute'::interval, NOW() + '3 hour'::interval, TRUE),
 (3, 'Czy warto robić?', 1, '2022-04-08 15:00:00.000000', '2022-04-08 15:15:00.000000', TRUE),

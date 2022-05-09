@@ -1,7 +1,7 @@
 const pool = require('../../../../db');
 const questionShowAnswers = require('../../../../schema/adminSchema');
 
-const setShowResults = async (socket, message) => {
+const setShowResults = async (req, res) => {
   questionShowAnswers
     .validate(message)
     .catch(err => {
@@ -15,8 +15,8 @@ const setShowResults = async (socket, message) => {
     .then(valid => {
       if (valid) {
         pool.query(
-          'UPDATE questions SET show_answers=$1 where id=$2',
-          [message.showAnswers, message.id],
+          'UPDATE questions SET show_results=$1 where id=$2',
+          [message.showResults, message.id],
           (err, res) => {
             if (err) {
               res.status(406).json({

@@ -24,6 +24,7 @@ const {
   adminUsers
 } = require('./controllers/socketController');
 const pool = require('./db');
+const { me } = require('./controllers/express/authController');
 
 const server = require('http').createServer(app);
 
@@ -42,7 +43,7 @@ const sessionMiddleware = session({
   store: new RedisStore({ client: redisClient }),
   secret: process.env.SESSION_SECRET,
   resave: true,
-  saveUninitialized: true,
+  saveUninitialized: false,
   cookie: {
     secure: false,
     httpOnly: false,
@@ -68,15 +69,15 @@ io.use((socket, next) => {
 io.on('connect', async socket => {
   socket.join('votum');
   // and then later
-
   initializeUser(socket);
+  getCurrentUser(socket);
   // User Section
 
   socket.on('openQuestion', message => openQuestion(socket, message));
 
   socket.on('questions', () => questions(socket));
 
-  socket.on('getCurrentUser', () => getCurrentUser(socket));
+  socket.on('me', () => getCurrentUser(socket));
 
   // Admin section
   socket.on('adminRefresh', () => authorizeAdmin(socket, adminRefresh));

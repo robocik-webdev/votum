@@ -14,7 +14,21 @@ const votumRouters = [
   questionsRouter,
   utilitiesRouter
 ];
-votumRouter.use('/votum', votumRouters);
+votumRouter.use(
+  '/votum',
+  (req, res, next) => {
+    if (req.session.authenticated) {
+      next();
+    } else {
+      res.status(400).json({
+        success: false,
+        status: 400,
+        error: 'Nieupoważnionym wstęp wzbroniony, prosimy się zalogować'
+      });
+    }
+  },
+  votumRouters
+);
 
 // Census[WIP] routers
 const censusRouters = [authRouter];

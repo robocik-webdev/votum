@@ -8,7 +8,7 @@ const availableQuestions = async () => {
     `SELECT * FROM questions WHERE time_open <= now() AND time_close > now();`
   );
   const finishedQuestions = await pool.query(
-    `SELECT * FROM questions WHERE time_open <= now() AND time_close <= now() AND show_answers=true;`
+    `SELECT * FROM questions WHERE time_open <= now() AND time_close <= now() AND show_results=true;`
   );
 
   return {

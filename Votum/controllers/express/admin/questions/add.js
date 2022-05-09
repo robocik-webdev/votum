@@ -15,11 +15,11 @@ const addQuestion = async (req, res) => {
     .then(valid => {
       if (valid) {
         pool.query(
-          `INSERT INTO questions (title, possible_answers, show_answers, time_open, time_close) VALUES ($1, $2, $3, $4, $5);`,
+          `INSERT INTO questions (title, possible_answers, show_results, time_open, time_close) VALUES ($1, $2, $3, $4, $5);`,
           [
             message.title,
             message.possibleAnswers,
-            message.showAnswers,
+            message.showResults,
             message.timeOpen,
             message.timeClose
           ],

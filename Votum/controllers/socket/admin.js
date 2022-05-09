@@ -14,25 +14,28 @@ class ValidationError extends Error {
 }
 
 const authorizeAdmin = async (socket, next, data = {}) => {
-  const token = socket.handshake.auth.token;
-  jwtVerify(token, process.env.JWT_SECRET)
-    .then(async decoded => {
-      const potentialAdmin = await pool.query(
-        `SELECT admin FROM users u WHERE u.id='${[decoded.id]}'`
-      );
-      if (potentialAdmin.rowCount > 0) {
-        if (potentialAdmin.rows[0].admin) {
-          next(socket, data);
-        } else {
-          throw new ValidationError('No admin');
-        }
-      } else {
-        throw new ValidationError('Not admin');
-      }
-    })
-    .catch(err => {
-      throw new ValidationError('Not admin');
+  const id = socket.request.session.userID;
+  console.log(id);
+  const potentialAdmin = await pool.query(
+    `SELECT admin FROM users u WHERE u.id='${[id]}'`
+  );
+  if (potentialAdmin.rowCount > 0) {
+    if (potentialAdmin.rows[0].admin) {
+      next(socket, data);
+    } else {
+      socket.emit('error', {
+        success: false,
+        status: 400,
+        error: 'Nieupoważnionym wstęp wzbroniony!'
+      });
+    }
+  } else {
+    socket.emit('error', {
+      success: false,
+      status: 400,
+      error: 'Nieupoważnionym wstęp wzbroniony!'
     });
+  }
 };
 
 const adminRefresh = async socket => {
@@ -57,7 +60,11 @@ const adminQuestions = async socket => {
 
 const adminUsers = async socket => {
   const users = await pool.query(`SELECT * FROM users`);
-  socket.emit('adminUsers', { status: 200, data: { users: users.rows } });
+  socket.emit('adminUsers', {
+    success: true,
+    status: 200,
+    data: { users: users.rows }
+  });
 };
 
 module.exports = {

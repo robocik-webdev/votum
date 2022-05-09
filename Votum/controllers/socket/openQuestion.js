@@ -29,7 +29,7 @@ const openQuestion = async (socket, message) => {
                       answers: answers.rows
                     }
                   });
-                } else if (res.rows[0].showAnswers == true) {
+                } else if (res.rows[0].showResults == true) {
                   const answers = await pool.query(
                     `SELECT a.title AS title, count(aq.id) AS count
                     FROM answers a

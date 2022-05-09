@@ -15,11 +15,11 @@ const editQuestion = async (req, res) => {
     .then(valid => {
       if (valid) {
         pool.query(
-          'UPDATE questions SET title=$1, possible_answers=$2, show_answers=$3, time_open=$4, time_close=$5 WHERE id=$6',
+          'UPDATE questions SET title=$1, possible_answers=$2, show_results=$3, time_open=$4, time_close=$5 WHERE id=$6',
           [
             message.title,
             message.possibleAnswers,
-            message.showAnswers,
+            message.showResults,
             message.timeOpen,
             message.timeClose,
             message.id

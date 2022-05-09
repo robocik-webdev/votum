@@ -1,9 +1,12 @@
 const pool = require('../../../../db');
 const { newQuestion } = require('../../../../schema/adminSchema');
+const generateAnswers = require('../../../../utils/generateAnswers');
+const ioAdminQuestions = require('../../../socketController').adminQuestions;
+const ioAdminRefresh = require('../../../socketController').adminRefresh;
 
 const addQuestion = async (req, res) => {
   newQuestion
-    .validate(message)
+    .validate(req.body)
     .catch(err => {
       res.status(400).json({
         success: false,
@@ -15,13 +18,13 @@ const addQuestion = async (req, res) => {
     .then(valid => {
       if (valid) {
         pool.query(
-          `INSERT INTO questions (title, possible_answers, show_results, time_open, time_close) VALUES ($1, $2, $3, $4, $5);`,
+          `INSERT INTO questions (title, max_answers, show_results, time_open, time_close) VALUES ($1, $2, $3, $4, $5) RETURNING id;`,
           [
-            message.title,
-            message.possibleAnswers,
-            message.showResults,
-            message.timeOpen,
-            message.timeClose
+            valid.title,
+            valid.maxAnswers,
+            valid.showResults,
+            valid.timeOpen,
+            valid.timeClose
           ],
           (err, result) => {
             if (err) {
@@ -32,16 +35,14 @@ const addQuestion = async (req, res) => {
                 errorDetails: err
               });
             } else {
-              res.status(200).json({ success: true, status: 200 });
+              generateAnswers(valid.answers, result.rows[0].id).then(result => {
+                res.status(result.status).json(result);
+                ioAdminQuestions(req.app.get('io'));
+                ioAdminRefresh(req.app.get('io'));
+              });
             }
           }
         );
-      } else {
-        res.status(400).json({
-          success: false,
-          status: 400,
-          error: 'Nieprawidłowe zapytanie!'
-        });
       }
     });
 };

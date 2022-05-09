@@ -7,15 +7,20 @@ const { authorizeAdmin, checkIfAdmin } = controllers.admin;
 const adminQuestions = controllers.admin.questions;
 const userQuestions = controllers.user.questions;
 
-router.route('/questions').get(async (req, res) => {
-  checkIfAdmin(req).then(result => {
-    if (result.admin) {
-      adminQuestions.getQuestions(req, res);
-    } else {
-      userQuestions.getQuestions(req, res);
-    }
+router
+  .route('/questions')
+  .get(async (req, res) => {
+    checkIfAdmin(req).then(result => {
+      if (result.admin) {
+        adminQuestions.getQuestions(req, res);
+      } else {
+        userQuestions.getQuestions(req, res);
+      }
+    });
+  })
+  .post(async (req, res) => {
+    authorizeAdmin(req, res, adminQuestions.addQuestion);
   });
-});
 router
   .route('/questions/:id')
   .get((req, res) => {
@@ -26,6 +31,9 @@ router
         userQuestions.getQuestion(req, res);
       }
     });
+  })
+  .put((req, res) => {
+    authorizeAdmin(req, res, adminQuestions.editQuestion);
   })
   .delete((req, res) => {
     authorizeAdmin(req, res, adminQuestions.deleteQuestion);

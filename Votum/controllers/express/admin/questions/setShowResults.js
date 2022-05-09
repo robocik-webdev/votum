@@ -1,5 +1,7 @@
 const pool = require('../../../../db');
 const { questionShowAnswers } = require('../../../../schema/adminSchema');
+const ioAdminQuestions = require('../../../socketController').adminQuestions;
+const ioAdminRefresh = require('../../../socketController').adminRefresh;
 
 const setShowResults = async (req, res) => {
   let message = req.body;
@@ -30,6 +32,8 @@ const setShowResults = async (req, res) => {
               });
             } else {
               res.status(200).json({ success: true, status: 200 });
+              ioAdminQuestions(req.app.get('io'));
+              ioAdminRefresh(req.app.get('io'));
             }
           }
         );

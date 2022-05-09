@@ -4,7 +4,7 @@ const newQuestion = Yup.object({
   title: Yup.string()
     .required('Question required')
     .min(1, 'Question too short'),
-  possibleAnswers: Yup.number()
+  maxAnswers: Yup.number()
     .required('Maximum possible answers required')
     .positive()
     .integer(),

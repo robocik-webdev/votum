@@ -1,7 +1,12 @@
 const pool = require('../../../../db');
 const { modifyQuestion } = require('../../../../schema/adminSchema');
+const generateAnswers = require('../../../../utils/generateAnswers');
+const ioAdminQuestions = require('../../../socketController').adminQuestions;
+const ioAdminRefresh = require('../../../socketController').adminRefresh;
 
 const editQuestion = async (req, res) => {
+  let message = req.body;
+  message.id = req.params.id;
   modifyQuestion
     .validate(message)
     .catch(err => {
@@ -15,14 +20,14 @@ const editQuestion = async (req, res) => {
     .then(valid => {
       if (valid) {
         pool.query(
-          'UPDATE questions SET title=$1, possible_answers=$2, show_results=$3, time_open=$4, time_close=$5 WHERE id=$6',
+          'UPDATE questions SET title=$1, max_answers=$2, show_results=$3, time_open=$4, time_close=$5 WHERE id=$6',
           [
-            message.title,
-            message.possibleAnswers,
-            message.showResults,
-            message.timeOpen,
-            message.timeClose,
-            message.id
+            valid.title,
+            valid.maxAnswers,
+            valid.showResults,
+            valid.timeOpen,
+            valid.timeClose,
+            valid.id
           ],
           (err, result) => {
             if (err) {
@@ -33,7 +38,11 @@ const editQuestion = async (req, res) => {
                 errorDetails: err
               });
             } else {
-              res.status(200).json({ success: true, status: 200 });
+              generateAnswers(valid.answers, valid.id).then(result => {
+                res.status(result.status).json(result);
+                ioAdminQuestions(req.app.get('io'));
+                ioAdminRefresh(req.app.get('io'));
+              });
             }
           }
         );

@@ -7,6 +7,7 @@ const modifyAnswer = Yup.object({
     .integer(),
   title: Yup.string()
     .required('Answer text required')
-    .min(1, 'Answer text too short')
+    .min(1, 'Answer text too short'),
+  answers: Yup.array().of(Yup.string()).ensure()
 });
 module.exports = modifyAnswer;

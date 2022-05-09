@@ -1,5 +1,7 @@
 const pool = require('../../../../db');
 const { idValidation } = require('../../../../schema/adminSchema');
+const ioAdminQuestions = require('../../../socketController').adminQuestions;
+const ioAdminRefresh = require('../../../socketController').adminRefresh;
 
 const deleteQuestion = async (req, res) => {
   idValidation
@@ -65,6 +67,8 @@ const deleteQuestion = async (req, res) => {
                                 res
                                   .status(200)
                                   .json({ success: true, status: 200 });
+                                ioAdminQuestions(req.app.get('io'));
+                                ioAdminRefresh(req.app.get('io'));
                               }
                             }
                           );

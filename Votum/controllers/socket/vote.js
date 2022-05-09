@@ -11,7 +11,7 @@ const vote = async (socket, message) => {
     .then(async valid => {
       if (valid) {
         const question = await pool.query(
-          `SELECT * FROM questions WHERE open_time <= now() AND close_time > now() AND id = $1;`,
+          `SELECT * FROM questions WHERE time_open <= now() AND time_close > now() AND id = $1;`,
           [message.id]
         );
         if (question.rowCount == 1) {

@@ -16,16 +16,16 @@ CREATE TABLE users(
 CREATE TABLE questions(
     id SERIAL PRIMARY KEY ,
     title VARCHAR(200) NOT NULL,
-    possible_answers INTEGER NOT NULL,
-    show_answers BOOLEAN NOT NULL DEFAULT FALSE,
-    open_time TIMESTAMP NOT NULL,
-    close_time TIMESTAMP NOT NULL
+    max_answers INTEGER NOT NULL,
+    show_results BOOLEAN NOT NULL DEFAULT FALSE,
+    time_open TIMESTAMP NOT NULL,
+    time_close TIMESTAMP NOT NULL
 );
 
 CREATE TABLE answers(
     id SERIAL PRIMARY KEY ,
-    title VARCHAR(200) NOT NULL,
-    questions_id INTEGER REFERENCES questions(id)
+    questions_id INTEGER REFERENCES questions(id),
+    title VARCHAR(200) NOT NULL
 );
 
 CREATE TABLE users_has_questions(

@@ -8,22 +8,7 @@ const {
   adminRefresh,
   authorizeAdmin,
   adminQuestions,
-  adminUsers,
-  adminAddAnswer,
-  adminModifyAnswer,
-  adminRemoveAnswer,
-  adminAddQuestion,
-  adminModifyQuestnion,
-  adminRemoveQuestion,
-  adminSetQuestionShowAnswers,
-  adminAddUser,
-  adminModifyUser,
-  adminRemoveUser,
-  adminSetUserPrivilage,
-  adminRegenUserToken,
-  adminRegenAllUserTokens,
-  adminImportUsers,
-  adminSeedDatabase
+  adminUsers
 } = require('./socket/admin');
 
 module.exports = {
@@ -36,20 +21,5 @@ module.exports = {
   adminRefresh,
   authorizeAdmin,
   adminQuestions,
-  adminUsers,
-  adminAddAnswer,
-  adminModifyAnswer,
-  adminRemoveAnswer,
-  adminAddQuestion,
-  adminModifyQuestnion,
-  adminRemoveQuestion,
-  adminSetQuestionShowAnswers,
-  adminAddUser,
-  adminModifyUser,
-  adminRemoveUser,
-  adminSetUserPrivilage,
-  adminRegenUserToken,
-  adminRegenAllUserTokens,
-  adminImportUsers,
-  adminSeedDatabase
+  adminUsers
 };

@@ -1,36 +1,27 @@
 const express = require('express');
+const session = require('express-session');
 const { corsConfig } = require('./controllers/serverController');
 const { Server } = require('socket.io');
 const app = express();
 const helmet = require('helmet');
 const cors = require('cors');
-const authRouter = require('./routers/authRouter');
+const routers = require('./routers/routers.js');
+const redisClient = require('./redis.js');
+const connectRedis = require('connect-redis');
+
+const RedisStore = connectRedis(session);
+redisClient.connect();
+require('dotenv').config();
+
 const {
   initializeUser,
-  authorizeUser,
   getCurrentUser,
   questions,
   openQuestion,
-  vote,
   adminRefresh,
   authorizeAdmin,
   adminQuestions,
-  adminUsers,
-  adminAddAnswer,
-  adminModifyAnswer,
-  adminRemoveAnswer,
-  adminAddQuestion,
-  adminModifyQuestnion,
-  adminRemoveQuestion,
-  adminSetQuestionShowAnswers,
-  adminAddUser,
-  adminModifyUser,
-  adminRemoveUser,
-  adminSetUserPrivilage,
-  adminRegenUserToken,
-  adminRegenAllUserTokens,
-  adminImportUsers,
-  adminSeedDatabase
+  adminUsers
 } = require('./controllers/socketController');
 const pool = require('./db');
 
@@ -45,16 +36,38 @@ app.use(express.static('client'));
 app.use(helmet());
 app.use(cors(corsConfig));
 app.use(express.json());
-app.use('/auth', authRouter);
 
 app.set('trust proxy', 1);
+const sessionMiddleware = session({
+  store: new RedisStore({ client: redisClient }),
+  secret: process.env.SESSION_SECRET,
+  resave: true,
+  saveUninitialized: true,
+  cookie: {
+    secure: false,
+    httpOnly: false,
+    maxAge: 3600000
+  }
+});
+app.use(sessionMiddleware);
+app.use('/api', routers);
 
-io.use(authorizeUser);
+const wrap = middleware => (socket, next) =>
+  middleware(socket.request, {}, next);
+io.use(wrap(sessionMiddleware));
+
+io.use((socket, next) => {
+  const session = socket.request.session;
+  if (session && session.authenticated) {
+    next();
+  } else {
+    next(new Error('unauthorized'));
+  }
+});
+
 io.on('connect', async socket => {
   socket.join('votum');
-
   // and then later
-  io.to(socket.id).emit('message', { message: 'Hello' });
 
   initializeUser(socket);
   // User Section
@@ -62,8 +75,6 @@ io.on('connect', async socket => {
   socket.on('openQuestion', message => openQuestion(socket, message));
 
   socket.on('questions', () => questions(socket));
-
-  socket.on('vote', message => vote(socket, message));
 
   socket.on('getCurrentUser', () => getCurrentUser(socket));
 
@@ -73,54 +84,6 @@ io.on('connect', async socket => {
   socket.on('adminQuestions', () => authorizeAdmin(socket, adminQuestions));
 
   socket.on('adminUsers', () => authorizeAdmin(socket, adminUsers));
-
-  socket.on('adminAddQuestion', message =>
-    authorizeAdmin(socket, adminAddQuestion, message)
-  );
-  socket.on('adminAddAnswer', message =>
-    authorizeAdmin(socket, adminAddAnswer, message)
-  );
-  socket.on('adminAddUser', message =>
-    authorizeAdmin(socket, adminAddUser, message)
-  );
-  socket.on('adminModifyUser', message =>
-    authorizeAdmin(socket, adminModifyUser, message)
-  );
-  socket.on('adminSetUserPrivilage', message =>
-    authorizeAdmin(socket, adminSetUserPrivilage, message)
-  );
-  socket.on('adminModifyAnswer', message =>
-    authorizeAdmin(socket, adminModifyAnswer, message)
-  );
-  socket.on('adminModifyQuestion', message =>
-    authorizeAdmin(socket, adminModifyQuestnion, message)
-  );
-  socket.on('adminSetQuestionShowAnswers', message =>
-    authorizeAdmin(socket, adminSetQuestionShowAnswers, message)
-  );
-  socket.on('adminRemoveQuestion', message =>
-    authorizeAdmin(socket, adminRemoveQuestion, message)
-  );
-  socket.on('adminRemoveAnswer', message =>
-    authorizeAdmin(socket, adminRemoveAnswer, message)
-  );
-  socket.on('adminRemoveUser', message =>
-    authorizeAdmin(socket, adminRemoveUser, message)
-  );
-  socket.on('adminRegenUserToken', message =>
-    authorizeAdmin(socket, adminRegenUserToken, message)
-  );
-  socket.on('adminRegenAllUserTokens', () =>
-    authorizeAdmin(socket, adminRegenAllUserTokens)
-  );
-
-  socket.on('adminImportUsers', message =>
-    authorizeAdmin(socket, adminImportUsers, message)
-  );
-
-  socket.on('adminSeedDatabase', () =>
-    authorizeAdmin(socket, adminSeedDatabase)
-  );
 });
 
 server.listen(process.env.PORT, () => {

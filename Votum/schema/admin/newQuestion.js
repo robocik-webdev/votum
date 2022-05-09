@@ -11,8 +11,8 @@ const newQuestion = Yup.object({
   showAnswers: Yup.boolean().required(
     'You need to specify whether or not to show answers of this poll'
   ),
-  openTime: Yup.date().required('Open time required'),
-  closeTime: Yup.date().required('Close time is required'),
+  timeOpen: Yup.date().required('Open time required'),
+  timeClose: Yup.date().required('Close time is required'),
   answers: Yup.array().of(Yup.string()).ensure()
 });
 module.exports = newQuestion;

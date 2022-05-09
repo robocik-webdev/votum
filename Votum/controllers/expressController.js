@@ -1,7 +1,4 @@
-const login = require('./express/login');
-const refresh = require('./express/refresh');
-
-module.exports = {
-  login,
-  refresh
-};
+const auth = require('./express/authController');
+const admin = require('./express/adminController');
+const controllers = { auth, admin };
+module.exports = { controllers };

@@ -2,13 +2,13 @@ const pool = require('../db');
 
 const availableQuestions = async () => {
   const closedQuestions = await pool.query(
-    `SELECT id, open_time, close_time FROM questions where open_time < (now() + '1 hour'::interval) AND open_time > now();`
+    `SELECT id, time_open, time_close FROM questions where time_open < (now() + '1 hour'::interval) AND time_open > now();`
   );
   const openQuestions = await pool.query(
-    `SELECT * FROM questions WHERE open_time <= now() AND close_time > now();`
+    `SELECT * FROM questions WHERE time_open <= now() AND time_close > now();`
   );
   const finishedQuestions = await pool.query(
-    `SELECT * FROM questions WHERE open_time <= now() AND close_time <= now() AND show_answers=true;`
+    `SELECT * FROM questions WHERE time_open <= now() AND time_close <= now() AND show_answers=true;`
   );
 
   return {

@@ -1,10 +1,5 @@
-const { jwtVerify } = require('../jwt/jwtAuth');
 const pool = require('../../db');
 const availableQuestions = require('../../utils/availableQuestions');
-const makeToken = require('../../utils/makeToken');
-const regenUserToken = require('../../utils/regenUserToken');
-
-let fs = require('fs');
 
 class ValidationError extends Error {
   constructor(message) {

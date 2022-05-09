@@ -1,5 +1,6 @@
 const pool = require('../../../../db');
 const regenUserToken = require('../../../../utils/regenUserToken');
+const ioAdminUsers = require('../../../socketController').adminUsers;
 
 const regenAllTokens = async (req, res) => {
   var x = 0;
@@ -19,6 +20,7 @@ const regenAllTokens = async (req, res) => {
       });
     } else {
       res.status(200).json({ success: true, status: 200 });
+      ioAdminUsers(req.app.get('io'));
     }
   });
 };

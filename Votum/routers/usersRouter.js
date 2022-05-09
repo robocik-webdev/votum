@@ -1,5 +1,4 @@
 const express = require('express');
-const admin = require('../controllers/express/adminController');
 const router = express.Router({ mergeParams: true });
 const controllers = require('../controllers/expressController').controllers;
 

@@ -1,0 +1,12 @@
+{
+  "name": "votum-directus",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "npx directus start",
+    "update": "npm update && npx directus database migrate:latest"
+  },
+  "dependencies": {
+    "directus": "^9.11.0",
+    "sqlite3": "^5.0.8"
+  }
+}

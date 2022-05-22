@@ -1,0 +1,1 @@
+"use strict";module.exports=(e,{services:s,exceptions:c})=>{const{ItemsService:t}=s,{ServiceUnavailableException:a}=c;e.get("/:id",((e,s,c)=>{new t("votum_votes",{schema:e.schema,accountability:e.accountability}).readByQuery({fields:["*"]}).then((c=>{console.log(e.params.id),s.json(c)})).catch((e=>c(new a(e.message))))}))};

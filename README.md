@@ -7,7 +7,7 @@ Below are some pictures and screenshots of sketches and mockups.
 
 ![votum-mockup](https://github.com/user-attachments/assets/85848e29-c13d-4f57-98e6-8eb31160eac5)
 
-![votum-admin-mockup](https://github.com/user-attachments/assets/4a053842-e1f9-40c2-94e3-cfa96b27707c)
+![votum-admin-mockup](https://github.com/user-attachments/assets/f98514e7-f451-400a-8d96-d6597024f95f)
 
 ![robocikhub-sketch](https://github.com/user-attachments/assets/d7ce4017-30cc-4193-8d77-1a8940238f84)
 
